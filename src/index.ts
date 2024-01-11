@@ -60,7 +60,7 @@ export async function generateService({
                                           schemaPath,
                                           requestImport,
                                           requestFunction = 'axios.request',
-                                          templatesFolder = path.join(__dirname, 'templates'),
+                                          templatesFolder = path.join(__dirname, "../", 'templates'),
                                           serversPath = process.cwd(),
                                           ...options
                                       }: GenerateServiceProps) {
