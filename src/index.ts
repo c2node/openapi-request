@@ -60,16 +60,16 @@ export async function generateService({
                                           schemaPath,
                                           requestImport,
                                           requestFunction = 'axios.request',
-                                          templatesFolder = path.join(__dirname, "../", 'templates'),
-                                          serversPath = process.cwd(),
+                                          templatesFolder,
+                                          serversPath,
                                           ...options
                                       }: GenerateServiceProps) {
     const openAPI = await getOpenApi3Document(schemaPath);
     const generator = new GeneratorService(openAPI, {
-        templatesFolder,
-        serversPath,
+        serversPath: serversPath ? serversPath : process.cwd(),
         requestImport: getImportStatement(requestImport),
         requestFunction,
+        templatesFolder: templatesFolder ? templatesFolder : path.join(__dirname, "../", 'templates'),
         hook: {},
         ...options,
     });
