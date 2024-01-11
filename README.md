@@ -7,7 +7,7 @@
 
 ## 使用
 ```node
-npm i --save-dev @openapi-to-service
+npm i --save-dev openapi-to-service
 ```
 在项目根目录新建 ```openapi.config.ts```
 ```ts

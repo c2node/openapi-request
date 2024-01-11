@@ -1,13 +1,21 @@
 {
   "name": "openapi-to-service",
-  "version": "1.0.0",
-  "description": "",
+  "version": "1.0.6",
+  "description": "Swagger 2.0 and OpenAPI 3.x to TypeScript Request Client",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json"
+    "build": "tsc -p tsconfig.build.json",
+    "npm-npm": "npm config set registry https://registry.npmjs.org/",
+    "npm-taobao": "npm config set registry https://registry.npm.taobao.org/",
+    "npm-login": "npm login",
+    "npm-publish": "npm publish"
   },
-  "keywords": [],
+  "keywords": ["openapi","swagger","openapi-to-ts","openapi client","swagger client","request client"],
   "author": "chuchunhong",
+  "repository": {
+    "type": "git",
+    "url": "git+git@github.com:c2node/openapi-to-service.git"
+  },
   "files": [
     "dist",
     "templates"
