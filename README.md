@@ -14,23 +14,26 @@ npm i --save-dev @openapi-to-service openapi-typescript-helpers
 const { generateService } = require('openapi-to-service')
 
 generateService({
-  schemaPath: 'http://petstore.swagger.io/v2/swagger.json',
-  serversPath: './servers',
-  // hook 示例
-  hook:{
-    customName({path,method,definition},defaultName){
-        if(path==="/test/test"){
-            return false;
+    schemaPath: 'http://petstore.swagger.io/v2/swagger.json',
+    serversPath: './servers',
+    // hook 示例
+    hook:{
+        customName({path,method,definition},defaultName){
+            if(path==="/test/test"){
+                return false;
+            }
+            if (path === '/system/menu/list') {
+                return {folder:"system",name:"getMenuList"};
+            }
+            return defaultName;
         }
-        if (path === '/system/menu/list') {
-          return {folder:"system",name:"getMenuList"};
-        }
-        return defaultName;
     }
-  }
 })
 
 ```
+**示例参考**
+[https://github.com/c2node/openapi-to-service/tree/main/test](https://github.com/c2node/openapi-to-service/tree/main/test)
+
 在 ```package.json``` 的 ```script``` 中添加 api: ```"openapi": "ts-node openapi.config.ts",```
 
 生成api
