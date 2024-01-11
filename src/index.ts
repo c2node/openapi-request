@@ -3,9 +3,8 @@ import * as fs from "fs";
 import axios from "axios";
 import * as converter from 'swagger2openapi';
 import {OpenAPI3} from "openapi-typescript/dist/types";
-import {GeneratorService} from "./generator";
+import {GeneratorService} from "./generator/service";
 import * as path from "path";
-import Log from "./log";
 import * as process from "process";
 
 /**
