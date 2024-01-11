@@ -1,0 +1,48 @@
+import {
+    ErrorResponse,
+    SuccessResponse,
+    FilterKeys,
+    MediaType,
+    ResponseObjectMap,
+    OperationRequestBodyContent,
+} from "openapi-typescript-helpers";
+<%- pathAst %>
+export type FetchResponse<T> =
+    FilterKeys<SuccessResponse<ResponseObjectMap<T>>, MediaType>
+    | FilterKeys<ErrorResponse<ResponseObjectMap<T>>, MediaType>;
+
+type OperationRequestParams<T> = T extends { parameters?: any }
+    ? T["parameters"]
+    : never;
+type OperationRequestPathParams<T> = T extends { path: any }
+    ? T["path"]
+    : never;
+type OperationRequestQueryParams<T> = T extends { query: any }
+    ? T["query"]
+    : never;
+export type RequestType<P extends keyof paths,
+    M extends keyof paths[P], Request extends paths[P][M] = paths[P][M], Params extends OperationRequestParams<Request> = OperationRequestParams<Request>> = {
+    path: OperationRequestPathParams<Params>,
+    query: OperationRequestQueryParams<Params>,
+    body: OperationRequestBodyContent<Request>,
+    response: FetchResponse<Request>
+};
+// 生成请求方法
+export function $$$<
+    P extends keyof paths,
+    M extends keyof paths[P],
+    Fn extends (url: P, method: M) => any
+>(url: P, method: M, fn: Fn): ReturnType<Fn> {
+    return fn(url, method)
+}
+// 格式化url路径中的变量
+export function formatPathVals(urlPath: string, keys: string[], vals: Record<string, string | number | (string | number)[]>) {
+    return keys.length ? keys.reduce((str, key) => {
+        let val = vals[key];
+        if (Array.isArray(val)) {
+            val = val.join(',')
+        }
+        delete vals[key];
+        return str.replace(new RegExp("{?}".replace("?",key), 'g'), "" + val);
+    }, urlPath) : urlPath
+}

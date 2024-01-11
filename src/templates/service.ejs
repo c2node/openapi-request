@@ -1,0 +1,46 @@
+<%- `import {$$$, formatPathVals, RequestType} from "./common";
+${config.requestImport};` %>
+<%_ apis.forEach((api)=>{ _%>
+export const <%- api.name %> = {
+	<%_ api.items.forEach((item)=>{ _%>
+	<%_ const {definition,params, pathKeys} = getMethodMetadata(item.path,item.method) _%>
+    /**
+     * <%- definition.summary ?? "此处后端没有提供注释" %>
+     <%_ if(definition.description){ _%>
+     * @description <%- definition.description %>
+     <%_ } _%>
+     <%_ if(definition.deprecated){ _%>
+     * @deprecated
+     <%_ } _%>
+     */
+    <%- item.name %>: $$$(<%- JSON.stringify(item.path) %>, <%- JSON.stringify(item.method) %>, (url, method) => {
+        type T = RequestType<typeof url, typeof method>;
+        <%_ // 处理请求参数
+			let requestOptions=[];
+			if(params.includes("path")&&params.includes("query")){
+				requestOptions.push(`params: T["path"] & T["query"]`);
+			}else if(params.includes("path")){
+				requestOptions.push(`params: T["path"]`);
+			}else if(params.includes("query")){
+				requestOptions.push(`params: T["query"]`);
+			}
+			if(params.includes("body")){
+				requestOptions.push(`body: T["body"]`);
+			}
+		_%>
+        return function (<%- requestOptions.join(", ") %>) {
+            return <%- config.requestFunction %><T['response']>({
+                url<%- pathKeys.length ? `: formatPathVals(url, ${JSON.stringify(pathKeys)}, params)` : "" %>,
+                method,
+                <%_ if(params.includes("query")){ _%>
+                params,
+                <%_ } _%>
+                <%_ if(params.includes("body")){ _%>
+                data:body,
+                <%_ } _%>
+            });
+        }
+    }),
+    <%_ }) _%>
+};
+<%_ }) _%>

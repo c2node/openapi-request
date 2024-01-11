@@ -1,0 +1,10 @@
+# dependencies
+**/node_modules
+# idea
+.idea
+# visual studio code
+.history
+# code
+test/service-files
+dist
+

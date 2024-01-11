@@ -1,0 +1,43 @@
+{
+  "name": "openapi-to-service",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "keywords": [],
+  "author": "chuchunhong",
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.10.7",
+    "@types/ejs": "^3.1.5",
+    "@types/reserved-words": "^0.1.4",
+    "@types/swagger2openapi": "^7.0.4",
+    "@typescript-eslint/eslint-plugin": "^6.18.1",
+    "@typescript-eslint/parser": "^6.18.1",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.1.2",
+    "openapi-typescript-helpers": "^0.0.6",
+    "prettier": "^3.1.1",
+    "ts-loader": "^9.5.1",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "axios": "^1.6.5",
+    "ejs": "^3.1.9",
+    "handlebars": "^4.7.8",
+    "openapi-fetch": "^0.8.2",
+    "openapi-typescript": "^6.7.3",
+    "reserved-words": "^0.1.2",
+    "swagger2openapi": "^7.0.8",
+    "tiny-pinyin": "^1.3.2"
+  }
+}
