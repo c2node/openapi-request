@@ -26,13 +26,13 @@ generateService({
 npm run openapi
 ```
 ## 参数
-|  属性   | 必填  | 备注 | 类型 | 默认值 |
-|  ----  | ----  |  ----  |  ----  | - |
-| requestImport  | 否 | 导入自定义请求方法 | string | import axios from "axios" |
-| requestFunction  | 否 | 自定义请求方法名称 | string | axios.request |
-| serversPath  | 否 | 生成的文件夹的路径 | string | - |
-| schemaPath  | 否 | Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径 | string | - |
-| projectName  | 否 | 项目名称,如果有将在 serversPath 下创建文件夹 | string | - |
-| templatesFolder | 否 | 自定义模板文件的文件路径 | string | - |
-| hook.customName | 否 | 自定义请求函数名称，目录名称 | {name:"函数名称",folder:"目录名称"} | - |
-|   | 否 | 项目名称,如果有将在 serversPath 下创建文件夹 | string | - |
+|  属性   | 必填  | 备注                                   | 类型                                   | 默认值 |
+|  ----  | ----  |--------------------------------------|--------------------------------------| - |
+| requestImport  | 否 | 导入自定义请求方法                            | string                               | import axios from "axios" |
+| requestFunction  | 否 | 自定义请求方法名称                            | string                               | axios.request |
+| serversPath  | 否 | 生成的文件夹的路径                            | string                               | - |
+| schemaPath  | 否 | Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径 | string                               | - |
+| projectName  | 否 | 项目名称,如果有将在 serversPath 下创建文件夹        | string                               | - |
+| templatesFolder | 否 | 自定义模板文件的文件路径                         | string                               | - |
+| hook.customName | 否 | 自定义请求函数名称，目录名称,当为false时将不生成该接口       | {name:"函数名称",folder:"目录名称"} or false | - |
+|   | 否 | 项目名称,如果有将在 serversPath 下创建文件夹        | string                               | - |

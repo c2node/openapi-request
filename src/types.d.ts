@@ -26,7 +26,7 @@ export type GenerateServiceProps = {
 
     hook?: {
         /** 自定义函数名称 */
-        customName?: (data: OperationObject, defaultName: GenerateCustomNames) => GenerateCustomNames;
+        customName?: (data: OperationObject, defaultName: GenerateCustomNames) => GenerateCustomNames | false;
     };
     /**
      * 模板文件的文件路径

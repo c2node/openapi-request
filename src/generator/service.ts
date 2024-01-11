@@ -158,24 +158,31 @@ export class GeneratorService {
         const paths = Object.entries(this.apiPaths).reduce((arr, [path, methods]) => {
             const pathDefinition = Object.entries(methods).reduce((obj, [method, methodDefined]) => {
                 const methodDefinition = this.getMethodDefinition(methodDefined);
-                obj[method] = methodDefinition;
                 const defaultName = this.getDefaultName(path, method, methodDefinition);
                 const customName = this.config.hook.customName ? this.config.hook.customName(methodDefinition, defaultName) : defaultName;
-                const name = customName.name ? resolveIdentifier(customName.name) : defaultName.name;
-                const folder = customName.folder ? resolveIdentifier(customName.folder) : defaultName.folder;
-                const folderNames = urlPathSplit(folder);
-                const folderName = folderNames.join('.');
-                if (!folderTree[folderName]) {
-                    folderTree[folderName] = {pathNames: folderNames, items: {}};
-                }
-                if (folderTree[folderName].items[name]) {
-                    console.error('[openapi-to-service] duplicate names in the sibling directory:', format('?/? ?:?', folderName, name, method, path));
+                if (customName) {
+                    const name = customName.name ? resolveIdentifier(customName.name) : defaultName.name;
+                    const folder = customName.folder ? resolveIdentifier(customName.folder) : defaultName.folder;
+                    const folderNames = urlPathSplit(folder);
+                    const folderName = folderNames.join('.');
+                    if (!folderTree[folderName]) {
+                        folderTree[folderName] = {pathNames: folderNames, items: {}};
+                    }
+                    if (folderTree[folderName].items[name]) {
+                        console.error('[openapi-to-service] duplicate names in the sibling directory:', format('?/? ?:?', folderName, name, method, path));
+                    } else {
+                        folderTree[folderName].items[name] = {path, method, name};
+                    }
+                    obj[method] = methodDefinition;
                 } else {
-                    folderTree[folderName].items[name] = {path, method, name};
+                    // 删除接口
+                    delete obj[method];
                 }
                 return obj;
             }, {});
-            arr.push([path, pathDefinition]);
+            if (Object.keys(pathDefinition).length) {
+                arr.push([path, pathDefinition]);
+            }
             return arr;
         }, []);
         this.openApi.paths = Object.fromEntries(paths);
