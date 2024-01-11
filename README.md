@@ -35,4 +35,3 @@ npm run openapi
 | projectName  | 否 | 项目名称,如果有将在 serversPath 下创建文件夹        | string                               | - |
 | templatesFolder | 否 | 自定义模板文件的文件路径                         | string                               | - |
 | hook.customName | 否 | 自定义请求函数名称，目录名称,当为false时将不生成该接口       | {name:"函数名称",folder:"目录名称"} or false | - |
-|   | 否 | 项目名称,如果有将在 serversPath 下创建文件夹        | string                               | - |

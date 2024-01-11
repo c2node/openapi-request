@@ -159,7 +159,11 @@ export class GeneratorService {
             const pathDefinition = Object.entries(methods).reduce((obj, [method, methodDefined]) => {
                 const methodDefinition = this.getMethodDefinition(methodDefined);
                 const defaultName = this.getDefaultName(path, method, methodDefinition);
-                const customName = this.config.hook.customName ? this.config.hook.customName(methodDefinition, defaultName) : defaultName;
+                const customName = this.config.hook.customName ? this.config.hook.customName({
+                    definition: methodDefinition,
+                    path,
+                    method
+                }, defaultName) : defaultName;
                 if (customName) {
                     const name = customName.name ? resolveIdentifier(customName.name) : defaultName.name;
                     const folder = customName.folder ? resolveIdentifier(customName.folder) : defaultName.folder;
