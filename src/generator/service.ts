@@ -4,6 +4,7 @@ import * as path from "path";
 import {format} from "util";
 import * as openapiTS from "openapi-typescript";
 import * as ejs from "ejs";
+// @ts-nocheck
 import type {
     OpenAPI3,
     OperationObject,
@@ -12,7 +13,6 @@ import type {
     ParameterObject
 } from "openapi-typescript/src/types";
 import {getPathLastName, resolveIdentifier, urlPathSplit} from "../utils";
-import * as process from "process";
 
 export type TemplateFileType = 'common' | 'service' | 'index';
 

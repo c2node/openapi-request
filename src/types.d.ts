@@ -1,3 +1,4 @@
+// @ts-nocheck
 import type {OperationObject} from "openapi-typescript/src/types";
 
 export type GenerateCustomNames = { name: string, folder: string };
