@@ -1,3 +1,5 @@
+// @ts-ignore
+/* eslint-disable */
 <%- `import {$$$, formatPathVals, RequestType} from "./common";
 ${config.requestImport};` %>
 <%_ apis.forEach((api)=>{ _%>
@@ -27,9 +29,12 @@ export const <%- api.name %> = {
 			if(params.includes("body")){
 				requestOptions.push(`body: T["body"]`);
 			}
+            if(config.requestFnOtherParams){
+                requestOptions.push(`${config.requestFnOtherParams}`);
+            }
 		_%>
         return function (<%- requestOptions.join(", ") %>) {
-            return <%- config.requestFunction %><T['response']>({
+            return <%- config.requestFnName %><T['response']>({
                 url<%- pathKeys.length ? `: formatPathVals(url, ${JSON.stringify(pathKeys)}, params)` : "" %>,
                 method,
                 <%_ if(params.includes("query")){ _%>
@@ -38,7 +43,7 @@ export const <%- api.name %> = {
                 <%_ if(params.includes("body")){ _%>
                 data:body,
                 <%_ } _%>
-            });
+            }<%- config.requestFnOtherParams?`, config.requestFnOtherParams`:"" %>);
         }
     }),
     <%_ }) _%>

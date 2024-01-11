@@ -58,7 +58,7 @@ const getImportStatement = (requestImport: string) => {
 export async function generateService({
                                           schemaPath,
                                           requestImport,
-                                          requestFunction = 'axios.request',
+                                          requestFnName = 'axios.request',
                                           templatesFolder,
                                           serversPath,
                                           ...options
@@ -67,7 +67,7 @@ export async function generateService({
     const generator = new GeneratorService(openAPI, {
         serversPath: serversPath ? serversPath : process.cwd(),
         requestImport: getImportStatement(requestImport),
-        requestFunction,
+        requestFnName,
         templatesFolder: templatesFolder ? templatesFolder : path.join(__dirname, "../", 'templates'),
         hook: {},
         ...options,

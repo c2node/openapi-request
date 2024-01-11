@@ -10,7 +10,11 @@ export type GenerateServiceProps = {
     /**
      * 请求方法名称，默认为 axios.request
      */
-    requestFunction?: string;
+    requestFnName?: string;
+    /**
+     * 请求方法其他参数
+     */
+    requestFnOtherParams?:string;
     /**
      * 生成的文件夹的路径
      */
@@ -18,7 +22,7 @@ export type GenerateServiceProps = {
     /**
      * Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径
      */
-    schemaPath?: string;
+    schemaPath: string;
     /**
      * 项目名称,如果有将在 serversPath 下创建文件夹
      */
