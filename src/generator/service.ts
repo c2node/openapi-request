@@ -13,6 +13,7 @@ import type {
     ParameterObject
 } from "openapi-typescript/src/types";
 import {getPathLastName, resolveIdentifier, urlPathSplit} from "../utils";
+import {DefaultTemplateFolder} from "../index";
 
 export type TemplateFileType = 'common' | 'service' | 'index';
 
@@ -30,7 +31,16 @@ export class GeneratorService {
      */
     protected getTemplateEngine() {
         if (!this.templateEngine) {
-            const readFile = (filename: string) => fs.promises.readFile(path.join(this.config.templatesFolder, filename + '.ejs'), {encoding: "utf-8"});
+
+            const readFile = (filename: string) => {
+                const templateFile = path.join(this.config.templatesFolder, filename + '.ejs');
+                const defaultTemplateFile = path.join(DefaultTemplateFolder, filename + '.ejs')
+                try {
+                    return fs.promises.readFile(templateFile, {encoding: "utf-8"});
+                } catch (e) {
+                    return fs.promises.readFile(defaultTemplateFile, {encoding: "utf-8"});
+                }
+            };
             this.templateEngine = async (name: string, context: Record<string, any>) => {
                 const template = await readFile(name);
                 const temp = ejs.compile(template);

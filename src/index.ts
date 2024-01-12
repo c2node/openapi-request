@@ -3,9 +3,11 @@ import * as fs from "fs";
 import axios from "axios";
 import * as converter from 'swagger2openapi';
 import {OpenAPI3} from "openapi-typescript/dist/types";
-import {GeneratorService} from "./generator/service";
+import {GeneratorService} from "./generator";
 import * as path from "path";
 import * as process from "process";
+
+export const DefaultTemplateFolder = path.join(__dirname, "../", 'templates');
 
 /**
  * 获取api文档
@@ -68,7 +70,7 @@ export async function generateService({
         serversPath: serversPath ? serversPath : process.cwd(),
         requestImport: getImportStatement(requestImport),
         requestFnName,
-        templatesFolder: templatesFolder ? templatesFolder : path.join(__dirname, "../", 'templates'),
+        templatesFolder: templatesFolder ? templatesFolder : DefaultTemplateFolder,
         hook: {},
         ...options,
     });
