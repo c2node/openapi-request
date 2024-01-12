@@ -45,12 +45,13 @@ const getImportStatement = (requestImport) => {
     }
     return "import axios from \"axios\"";
 };
-async function generateService({ schemaPath, requestImport, requestFnName = 'axios.request', templatesFolder, serversPath, ...options }) {
+async function generateService({ schemaPath, requestImport, requestFnName = 'axios.request', requestFnOtherParams = [], templatesFolder, serversPath, ...options }) {
     const openAPI = await getOpenApi3Document(schemaPath);
     const generator = new generator_1.GeneratorService(openAPI, {
         serversPath: serversPath ? serversPath : process.cwd(),
         requestImport: getImportStatement(requestImport),
         requestFnName,
+        requestFnOtherParams,
         templatesFolder: templatesFolder ? templatesFolder : exports.DefaultTemplateFolder,
         hook: {},
         ...options,

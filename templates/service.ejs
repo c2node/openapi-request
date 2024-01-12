@@ -29,8 +29,10 @@ export const <%- api.name %> = {
 			if(params.includes("body")){
 				requestOptions.push(`body: T["body"]`);
 			}
-            if(config.requestFnOtherParams){
-                requestOptions.push(`${config.requestFnOtherParams}`);
+            if(config.requestFnOtherParams&&config.requestFnOtherParams.length){
+                config.requestFnOtherParams.forEach(({name,type})=>{
+                    requestOptions.push(`${name}?: ${type}`);
+                });
             }
 		_%>
         return function (<%- requestOptions.join(", ") %>) {
@@ -43,7 +45,7 @@ export const <%- api.name %> = {
                 <%_ if(params.includes("body")){ _%>
                 data:body,
                 <%_ } _%>
-            }<%- config.requestFnOtherParams?`, config.requestFnOtherParams`:"" %>);
+            }<%- config.requestFnOtherParams?`, ${config.requestFnOtherParams.map(({name})=>name).join(', ')}`:"" %>);
         }
     }),
     <%_ }) _%>

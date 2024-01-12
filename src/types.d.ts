@@ -12,9 +12,9 @@ export type GenerateServiceProps = {
      */
     requestFnName?: string;
     /**
-     * 请求方法其他参数
+     * 请求方法其他可选参数
      */
-    requestFnOtherParams?:string;
+    requestFnOtherParams?: { name: string, type: string }[];
     /**
      * 生成的文件夹的路径
      */

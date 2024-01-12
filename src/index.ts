@@ -61,6 +61,7 @@ export async function generateService({
                                           schemaPath,
                                           requestImport,
                                           requestFnName = 'axios.request',
+                                          requestFnOtherParams = [],
                                           templatesFolder,
                                           serversPath,
                                           ...options
@@ -70,6 +71,7 @@ export async function generateService({
         serversPath: serversPath ? serversPath : process.cwd(),
         requestImport: getImportStatement(requestImport),
         requestFnName,
+        requestFnOtherParams,
         templatesFolder: templatesFolder ? templatesFolder : DefaultTemplateFolder,
         hook: {},
         ...options,

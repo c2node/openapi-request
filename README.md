@@ -45,7 +45,7 @@ npm run openapi
 |  ----  | ----  |  ----  |  ----  | - |
 | requestImport  | 否 | 导入自定义请求方法 | string | import axios from "axios" |
 | requestFnName  | 否 | 自定义请求方法名称 | string | axios.request |
-| requestFnOtherParams | 否 | 自定义请求方法其他可选参数 | string | -- |
+| requestFnOtherParams | 否 | 自定义请求方法其他可选参数 | { name: string, type: string }[] | -- |
 | serversPath  | 否 | 生成的文件夹的路径 | string | - |
 | schemaPath  | 是 | Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径 | string | - |
 | projectName  | 否 | 项目名称,如果有将在 serversPath 下创建文件夹 | string | - |
