@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateService = void 0;
+exports.generateService = exports.DefaultTemplateFolder = void 0;
 const fs = require("fs");
 const axios_1 = require("axios");
 const converter = require("swagger2openapi");
-const service_1 = require("./generator/service");
+const generator_1 = require("./generator");
 const path = require("path");
 const process = require("process");
+exports.DefaultTemplateFolder = path.join(__dirname, "../", 'templates');
 async function getApiDocument(schemaPath) {
     if (schemaPath.startsWith('http')) {
         try {
@@ -46,11 +47,11 @@ const getImportStatement = (requestImport) => {
 };
 async function generateService({ schemaPath, requestImport, requestFnName = 'axios.request', templatesFolder, serversPath, ...options }) {
     const openAPI = await getOpenApi3Document(schemaPath);
-    const generator = new service_1.GeneratorService(openAPI, {
+    const generator = new generator_1.GeneratorService(openAPI, {
         serversPath: serversPath ? serversPath : process.cwd(),
         requestImport: getImportStatement(requestImport),
         requestFnName,
-        templatesFolder: templatesFolder ? templatesFolder : path.join(__dirname, "../", 'templates'),
+        templatesFolder: templatesFolder ? templatesFolder : exports.DefaultTemplateFolder,
         hook: {},
         ...options,
     });

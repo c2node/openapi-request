@@ -7,6 +7,7 @@ const util_1 = require("util");
 const openapiTS = require("openapi-typescript");
 const ejs = require("ejs");
 const utils_1 = require("../utils");
+const index_1 = require("../index");
 class GeneratorService {
     openApi;
     config;
@@ -17,7 +18,16 @@ class GeneratorService {
     }
     getTemplateEngine() {
         if (!this.templateEngine) {
-            const readFile = (filename) => fs.promises.readFile(path.join(this.config.templatesFolder, filename + '.ejs'), { encoding: "utf-8" });
+            const readFile = (filename) => {
+                const templateFile = path.join(this.config.templatesFolder, filename + '.ejs');
+                const defaultTemplateFile = path.join(index_1.DefaultTemplateFolder, filename + '.ejs');
+                try {
+                    return fs.promises.readFile(templateFile, { encoding: "utf-8" });
+                }
+                catch (e) {
+                    return fs.promises.readFile(defaultTemplateFile, { encoding: "utf-8" });
+                }
+            };
             this.templateEngine = async (name, context) => {
                 const template = await readFile(name);
                 const temp = ejs.compile(template);
