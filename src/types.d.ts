@@ -2,6 +2,7 @@
 import type {OperationObject} from "openapi-typescript/src/types";
 
 export type GenerateCustomNames = { name: string, folder: string };
+
 export type GenerateServiceProps = {
     /**
      * 请求方法导入，默认为 import axios from "axios"
@@ -41,3 +42,20 @@ export type GenerateServiceProps = {
      */
     templatesFolder?: string;
 };
+// 请求服务参数1
+export interface ServiceRequestConfig {
+    // 请求 url path
+    url: string,
+    // 请求方法
+    method: string,
+    // 是否允许跨站点提交请求，携带Cookie需要
+    withCredentials?: boolean,
+    // header参数，其中Content-Type为body编码类型
+    headers?: Record<string, string>,
+    // 请求查询参数
+    params?: Record<string, any>,
+    // body参数
+    data?: Record<string, any> | FormData,
+    // 响应类型
+    responseType?: string,
+}

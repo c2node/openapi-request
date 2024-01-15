@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import {$$$, formatPathVals, RequestType} from "./common";
+import {$$$, formatPathVals, setHeader, RequestType} from "./common";
 import axios from "axios";
 export const pet = {
     /**
@@ -9,10 +9,14 @@ export const pet = {
     addPet: $$$("/pet", "post", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/json");
             return axios.request<T['response']>({
                 url,
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -21,10 +25,14 @@ export const pet = {
      */
     deletePet: $$$("/pet/{petId}", "delete", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
-        return function (params: T["path"]) {
+        return function (params: T["path"] & T["header"]) {
+			const headers = new Headers();
+			setHeader(headers, ["api_key"], params, false);
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["petId"], params),
                 method,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -39,6 +47,7 @@ export const pet = {
                 url,
                 method,
                 params,
+                responseType: "json",
             });
         }
     }),
@@ -54,6 +63,7 @@ export const pet = {
                 url,
                 method,
                 params,
+                responseType: "json",
             });
         }
     }),
@@ -67,6 +77,7 @@ export const pet = {
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["petId"], params),
                 method,
+                responseType: "json",
             });
         }
     }),
@@ -76,10 +87,14 @@ export const pet = {
     updatePet: $$$("/pet", "put", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/json");
             return axios.request<T['response']>({
                 url,
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -89,10 +104,14 @@ export const pet = {
     updatePetWithForm: $$$("/pet/{petId}", "post", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (params: T["path"], body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/x-www-form-urlencoded");
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["petId"], params),
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -102,10 +121,14 @@ export const pet = {
     uploadFile: $$$("/pet/{petId}/uploadImage", "post", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (params: T["path"], body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "multipart/form-data");
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["petId"], params),
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -121,6 +144,7 @@ export const store = {
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["orderId"], params),
                 method,
+                responseType: "json",
             });
         }
     }),
@@ -134,6 +158,7 @@ export const store = {
             return axios.request<T['response']>({
                 url,
                 method,
+                responseType: "json",
             });
         }
     }),
@@ -147,6 +172,7 @@ export const store = {
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["orderId"], params),
                 method,
+                responseType: "json",
             });
         }
     }),
@@ -156,10 +182,14 @@ export const store = {
     placeOrder: $$$("/store/order", "post", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/json");
             return axios.request<T['response']>({
                 url,
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -172,10 +202,14 @@ export const user = {
     createUser: $$$("/user", "post", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/json");
             return axios.request<T['response']>({
                 url,
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -185,10 +219,14 @@ export const user = {
     createUsersWithArrayInput: $$$("/user/createWithArray", "post", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/json");
             return axios.request<T['response']>({
                 url,
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -198,10 +236,14 @@ export const user = {
     createUsersWithListInput: $$$("/user/createWithList", "post", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/json");
             return axios.request<T['response']>({
                 url,
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),
@@ -215,6 +257,7 @@ export const user = {
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["username"], params),
                 method,
+                responseType: "json",
             });
         }
     }),
@@ -227,6 +270,7 @@ export const user = {
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["username"], params),
                 method,
+                responseType: "json",
             });
         }
     }),
@@ -240,6 +284,7 @@ export const user = {
                 url,
                 method,
                 params,
+                responseType: "json",
             });
         }
     }),
@@ -252,6 +297,7 @@ export const user = {
             return axios.request<T['response']>({
                 url,
                 method,
+                responseType: "json",
             });
         }
     }),
@@ -262,10 +308,14 @@ export const user = {
     updateUser: $$$("/user/{username}", "put", (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         return function (params: T["path"], body: T["body"]) {
+			const headers = new Headers();
+			headers.append("Content-Type", "application/json");
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["username"], params),
                 method,
-                data:body,
+                data: body,
+                headers: Object.fromEntries(headers.entries()),
+                responseType: "json",
             });
         }
     }),

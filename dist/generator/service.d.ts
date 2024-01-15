@@ -1,5 +1,5 @@
 import { GenerateCustomNames, GenerateServiceProps } from "../types";
-import type { OpenAPI3, OperationObject, PathsObject, ReferenceObject } from "openapi-typescript/src/types";
+import type { OpenAPI3, OperationObject, PathsObject } from "openapi-typescript/src/types";
 export type TemplateFileType = 'common' | 'service' | 'index';
 type RenderTemplate = (name: string, context: Record<string, any>) => Promise<string>;
 export declare class GeneratorService {
@@ -12,12 +12,14 @@ export declare class GeneratorService {
     get apiPaths(): PathsObject;
     protected clearDir(dirPath: string): Promise<void>;
     protected getOutputDir(): Promise<string>;
+    protected getRef(ref: string): unknown;
     protected getMethodMetadata(path: string, method: string): {
         definition: any;
-        params: string[];
-        pathKeys: any;
+        rawDefinition: any;
+        params: any;
+        contentType: string[];
+        responseType: string[];
     };
-    protected getMethodDefinition(definition: OperationObject | ReferenceObject): OperationObject;
     protected getDefaultName(path: string, method: string, defined: OperationObject): GenerateCustomNames;
     generator(): Promise<void>;
 }

@@ -4,7 +4,19 @@ import * as ReservedWords from 'reserved-words';
 import * as pinyin from "tiny-pinyin";
 
 export function urlPathSplit(urlPath: string, splitter: string | RegExp = /[\/.]+/) {
-    return urlPath.split(splitter).filter(v=>v.length>0);
+    return urlPath.split(splitter).filter(v => v.length > 0);
+}
+
+export function getByPath<T>(obj: Object, paths: string[]): T | undefined {
+    let item = obj;
+    for (const key of paths) {
+        if (Object.hasOwn(item, key)) {
+            item = item[key];
+        } else {
+            return undefined;
+        }
+    }
+    return item as T;
 }
 
 export function getPathLastName(urlPath: string) {

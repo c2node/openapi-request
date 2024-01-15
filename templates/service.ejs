@@ -1,11 +1,11 @@
 // @ts-ignore
 /* eslint-disable */
-<%- `import {$$$, formatPathVals, RequestType} from "./common";
+<%- `import {$$$, formatPathVals, setHeader, RequestType} from "./common";
 ${config.requestImport};` %>
 <%_ apis.forEach((api)=>{ _%>
 export const <%- api.name %> = {
 	<%_ api.items.forEach((item)=>{ _%>
-	<%_ const {definition,params, pathKeys} = getMethodMetadata(item.path,item.method) _%>
+	<%_ const {definition,params,contentType = [],responseType = []} = item.metadata _%>
     /**
      * <%- definition.summary ?? "此处后端没有提供注释" %>
      <%_ if(definition.description){ _%>
@@ -18,15 +18,9 @@ export const <%- api.name %> = {
     <%- item.name %>: $$$(<%- JSON.stringify(item.path) %>, <%- JSON.stringify(item.method) %>, (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         <%_ // 处理请求参数
-			let requestOptions=[];
-			if(params.includes("path")&&params.includes("query")){
-				requestOptions.push(`params: T["path"] & T["query"]`);
-			}else if(params.includes("path")){
-				requestOptions.push(`params: T["path"]`);
-			}else if(params.includes("query")){
-				requestOptions.push(`params: T["query"]`);
-			}
-			if(params.includes("body")){
+			const paramsType = Object.keys(params).filter(type => type !== "body").map(type => format('T["%s"]', type));
+			const requestOptions = paramsType.length ? [`params: ${paramsType.join(" & ")}`] : [];
+			if(params.body){
 				requestOptions.push(`body: T["body"]`);
 			}
             if(config.requestFnOtherParams&&config.requestFnOtherParams.length){
@@ -36,16 +30,37 @@ export const <%- api.name %> = {
             }
 		_%>
         return function (<%- requestOptions.join(", ") %>) {
+		 <%_ if(contentType.length||params.header||params.cookie){ _%>
+			const headers = new Headers();
+			<%_ if(contentType.length){ _%>
+			headers.append("Content-Type", <%- dump(contentType[0]) %>);
+			<%_ } _%>
+			<%_ if(params.header){ _%>
+			setHeader(headers, <%- dump(params.header.keys) %>, params, false);
+			<%_ } _%>
+			<%_ if(params.cookie){ _%>
+			setHeader(headers, <%- dump(params.cookie.keys) %>, params, true);
+			<%_ } _%>
+		<%_ } _%>
             return <%- config.requestFnName %><T['response']>({
-                url<%- pathKeys.length ? `: formatPathVals(url, ${JSON.stringify(pathKeys)}, params)` : "" %>,
+                url<%- params.path?.keys.length ? `: formatPathVals(url, ${JSON.stringify(params.path.keys)}, params)` : "" %>,
                 method,
-                <%_ if(params.includes("query")){ _%>
+                <%_ if(params.query){ _%>
                 params,
                 <%_ } _%>
-                <%_ if(params.includes("body")){ _%>
-                data:body,
+                <%_ if(params.body){ _%>
+                data: body,
                 <%_ } _%>
-            }<%- config.requestFnOtherParams?`, ${config.requestFnOtherParams.map(({name})=>name).join(', ')}`:"" %>);
+                <%_ if(params.cookie){ _%>
+                withCredentials: true,
+                <%_ } _%>
+                <%_ if(contentType.length||params.header||params.cookie){ _%>
+                headers: Object.fromEntries(headers.entries()),
+                <%_ } _%>
+                <%_ if(responseType.length){ _%>
+                responseType: <%- dump(responseType[0]) %>,
+                <%_ } _%>
+            }<%- config.requestFnOtherParams?.length?`, ${config.requestFnOtherParams.map(({name})=>name).join(', ')}`:"" %>);
         }
     }),
     <%_ }) _%>

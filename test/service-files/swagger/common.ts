@@ -638,20 +638,15 @@ export interface operations {
 export type FetchResponse<T> =
     FilterKeys<SuccessResponse<ResponseObjectMap<T>>, MediaType>
     | FilterKeys<ErrorResponse<ResponseObjectMap<T>>, MediaType>;
-
-type OperationRequestParams<T> = T extends { parameters?: any }
-    ? T["parameters"]
-    : never;
-type OperationRequestPathParams<T> = T extends { path: any }
-    ? T["path"]
-    : never;
-type OperationRequestQueryParams<T> = T extends { query: any }
-    ? T["query"]
+type PickType<T, K extends string> = T extends { [key in K]: any }
+    ? T[K]
     : never;
 export type RequestType<P extends keyof paths,
-    M extends keyof paths[P], Request extends paths[P][M] = paths[P][M], Params extends OperationRequestParams<Request> = OperationRequestParams<Request>> = {
-    path: OperationRequestPathParams<Params>,
-    query: OperationRequestQueryParams<Params>,
+    M extends keyof paths[P], Request extends paths[P][M] = paths[P][M], Params extends PickType<Request, 'parameters'> = PickType<Request, 'parameters'>> = {
+    path: PickType<Params, 'path'>,
+    query: PickType<Params, 'query'>,
+    header: PickType<Params, 'header'>,
+    cookie: PickType<Params, 'cookie'>,
     body: OperationRequestBodyContent<Request>,
     response: FetchResponse<Request>
 };
@@ -673,4 +668,21 @@ export function formatPathVals(urlPath: string, keys: string[], vals: Record<str
         delete vals[key];
         return str.replace(new RegExp("{?}".replace("?",key), 'g'), "" + val);
     }, urlPath) : urlPath
+}
+// 添加header头
+export function setHeader(header: Headers, keys: string[], vals: Record<string, string | number | (string | number)[]>, isCookie = false) {
+    return keys.length ? keys.reduce((h, key) => {
+        let val = vals[key];
+        if (Array.isArray(val)) {
+            val.forEach(v => {
+                const _v = encodeURIComponent(v);
+                isCookie ? h.getSetCookie().push(`${key}=${_v}`) : h.append(key, `${_v}`);
+            });
+        } else {
+            const _v = encodeURIComponent(val);
+            isCookie ? h.getSetCookie().push(`${key}=${_v}`) : h.append(key, `${_v}`);
+        }
+        delete vals[key];
+        return h;
+    }, header) : header
 }

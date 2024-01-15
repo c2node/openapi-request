@@ -12,8 +12,9 @@ import type {
     ReferenceObject,
     ParameterObject
 } from "openapi-typescript/src/types";
-import {getPathLastName, resolveIdentifier, urlPathSplit} from "../utils";
+import {getByPath, getPathLastName, resolveIdentifier, urlPathSplit} from "../utils";
 import {DefaultTemplateFolder} from "../index";
+import transformMediaTypeObject from "openapi-typescript/dist/transform/media-type-object";
 
 export type TemplateFileType = 'common' | 'service' | 'index';
 
@@ -31,7 +32,6 @@ export class GeneratorService {
      */
     protected getTemplateEngine() {
         if (!this.templateEngine) {
-
             const readFile = (filename: string) => {
                 const templateFile = path.join(this.config.templatesFolder, filename + '.ejs');
                 const defaultTemplateFile = path.join(DefaultTemplateFolder, filename + '.ejs')
@@ -121,31 +121,57 @@ export class GeneratorService {
         return outputDir;
     }
 
+    protected getRef(ref: string) {
+        return getByPath(this.openApi, urlPathSplit(ref.replace(/^#+\/?/, '')));
+    }
+
     protected getMethodMetadata(path: string, method: string) {
         const paths = this.apiPaths;
         if (paths[path] && paths[path][method]) {
-            const definition = paths[path][method];
+            const rawDefinition = paths[path][method];
+            const definition = {...rawDefinition};
             const {parameters = [], requestBody} = definition;
-            const params = ['path', 'query'].filter(type => parameters.some((item: ParameterObject) => item.in == type));
-            const pathKeys = parameters.flatMap((item: ParameterObject) => item.in == "path" ? [item.name] : []);
-            if (requestBody) {
-                params.push('body');
+            const params = parameters.reduce((obj, parameter: ParameterObject) => {
+                if (!obj[parameter.in]) {
+                    obj[parameter.in] = {keys: [], required: []}
+                }
+                obj[parameter.in].keys.push(parameter.name)
+                if (parameter.required) {
+                    obj[parameter.in].required.push(parameter.name);
+                }
+                return obj;
+            }, {} as Record<"path" | "query" | "header" | "cookie" | "body", { keys: string[], required: string[] }>)
+            if (definition.requestBody) {
+                if (Object.hasOwn(definition['requestBody'], "$ref")) {
+                    const ref = this.getRef(definition['requestBody']['$ref']);
+                    if (ref) {
+                        definition['requestBody'] = ref;
+                    } else {
+                        console.error('[openapi-to-service] $ref not found:', definition['requestBody']['$ref']);
+                    }
+                }
             }
-            return {definition, params, pathKeys};
+            const contentType = definition.requestBody?.content ? Object.keys(definition.requestBody?.content) : [];
+            if (requestBody) {
+                params['body'] = {keys: [], required: []};
+            }
+            const responseType: string[] = [];
+            if (definition['responses']) {
+                Object.values(definition['responses']).forEach(({content}) => {
+                    if (content) {
+                        Object.keys(content).forEach(resType => {
+                            const type = urlPathSplit(resType).pop();
+                            if (!responseType.includes(type)) {
+                                responseType.push(type);
+                            }
+                        });
+                    }
+                });
+            }
+            return {definition,rawDefinition, params, contentType, responseType};
         } else {
             console.error('[openapi-to-service] request not found:', `${method}:${path}`);
         }
-    }
-
-    protected getMethodDefinition(definition: OperationObject | ReferenceObject): OperationObject {
-        if ((definition as ReferenceObject).$ref) {
-            const schema = this.openApi.components.schemas[(definition as ReferenceObject).$ref];
-            if (!schema) {
-                console.error('[openapi-to-service] $ref not found:', (definition as ReferenceObject).$ref);
-            }
-            return schema;
-        }
-        return definition;
     }
 
     protected getDefaultName(path: string, method: string, defined: OperationObject): GenerateCustomNames {
@@ -161,16 +187,15 @@ export class GeneratorService {
             path?: string,
             method?: string,
             name: string,
-            // params: ("query" | "path" | "body")[],
-            // pathKeys: string[],
+            metadata: ReturnType<typeof this['getMethodMetadata']>
         };
         const folderTree: Record<string, { pathNames: string[], items: Record<string, ApiTreeItem> }> = {};
         const paths = Object.entries(this.apiPaths).reduce((arr, [path, methods]) => {
             const pathDefinition = Object.entries(methods).reduce((obj, [method, methodDefined]) => {
-                const methodDefinition = this.getMethodDefinition(methodDefined);
-                const defaultName = this.getDefaultName(path, method, methodDefinition);
+                const metadata = this.getMethodMetadata(path, method);
+                const defaultName = this.getDefaultName(path, method, metadata.definition);
                 let customName = this.config.hook.customName ? this.config.hook.customName({
-                    definition: methodDefinition,
+                    definition: metadata.definition,
                     path,
                     method
                 }, defaultName) : defaultName;
@@ -185,9 +210,9 @@ export class GeneratorService {
                     if (folderTree[folderName].items[name]) {
                         console.error('[openapi-to-service] duplicate names in the sibling directory:', format('?/? ?:?', folderName, name, method, path));
                     } else {
-                        folderTree[folderName].items[name] = {path, method, name};
+                        folderTree[folderName].items[name] = {path, method, name, metadata};
                     }
-                    obj[method] = methodDefinition;
+                    obj[method] = metadata.rawDefinition;
                 } else {
                     // 删除接口
                     delete obj[method];
@@ -219,7 +244,8 @@ export class GeneratorService {
             apis,
             openapi: this.openApi,
             config: this.config,
-            getMethodMetadata: this.getMethodMetadata.bind(this),
+            format,
+            dump: (v: any) => JSON.stringify(v),
             pathAst,
         };
         await this.renderTemplateSave(path.join(outputDir, 'common.ts'), 'common', renderContext);

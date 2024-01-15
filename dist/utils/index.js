@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveIdentifier = exports.getPathLastName = exports.urlPathSplit = void 0;
+exports.resolveIdentifier = exports.getPathLastName = exports.getByPath = exports.urlPathSplit = void 0;
 const log_1 = require("../log");
 const ReservedWords = require("reserved-words");
 const pinyin = require("tiny-pinyin");
@@ -8,6 +8,19 @@ function urlPathSplit(urlPath, splitter = /[\/.]+/) {
     return urlPath.split(splitter).filter(v => v.length > 0);
 }
 exports.urlPathSplit = urlPathSplit;
+function getByPath(obj, paths) {
+    let item = obj;
+    for (const key of paths) {
+        if (Object.hasOwn(item, key)) {
+            item = item[key];
+        }
+        else {
+            return undefined;
+        }
+    }
+    return item;
+}
+exports.getByPath = getByPath;
 function getPathLastName(urlPath) {
     return urlPathSplit(urlPath).pop();
 }

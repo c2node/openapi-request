@@ -85,31 +85,58 @@ class GeneratorService {
         }
         return outputDir;
     }
+    getRef(ref) {
+        return (0, utils_1.getByPath)(this.openApi, (0, utils_1.urlPathSplit)(ref.replace(/^#+\/?/, '')));
+    }
     getMethodMetadata(path, method) {
         const paths = this.apiPaths;
         if (paths[path] && paths[path][method]) {
-            const definition = paths[path][method];
+            const rawDefinition = paths[path][method];
+            const definition = { ...rawDefinition };
             const { parameters = [], requestBody } = definition;
-            const params = ['path', 'query'].filter(type => parameters.some((item) => item.in == type));
-            const pathKeys = parameters.flatMap((item) => item.in == "path" ? [item.name] : []);
-            if (requestBody) {
-                params.push('body');
+            const params = parameters.reduce((obj, parameter) => {
+                if (!obj[parameter.in]) {
+                    obj[parameter.in] = { keys: [], required: [] };
+                }
+                obj[parameter.in].keys.push(parameter.name);
+                if (parameter.required) {
+                    obj[parameter.in].required.push(parameter.name);
+                }
+                return obj;
+            }, {});
+            if (definition.requestBody) {
+                if (Object.hasOwn(definition['requestBody'], "$ref")) {
+                    const ref = this.getRef(definition['requestBody']['$ref']);
+                    if (ref) {
+                        definition['requestBody'] = ref;
+                    }
+                    else {
+                        console.error('[openapi-to-service] $ref not found:', definition['requestBody']['$ref']);
+                    }
+                }
             }
-            return { definition, params, pathKeys };
+            const contentType = definition.requestBody?.content ? Object.keys(definition.requestBody?.content) : [];
+            if (requestBody) {
+                params['body'] = { keys: [], required: [] };
+            }
+            const responseType = [];
+            if (definition['responses']) {
+                Object.values(definition['responses']).forEach(({ content }) => {
+                    if (content) {
+                        Object.keys(content).forEach(resType => {
+                            const type = (0, utils_1.urlPathSplit)(resType).pop();
+                            if (!responseType.includes(type)) {
+                                responseType.push(type);
+                            }
+                        });
+                    }
+                });
+            }
+            return { definition, rawDefinition, params, contentType, responseType };
         }
         else {
             console.error('[openapi-to-service] request not found:', `${method}:${path}`);
         }
-    }
-    getMethodDefinition(definition) {
-        if (definition.$ref) {
-            const schema = this.openApi.components.schemas[definition.$ref];
-            if (!schema) {
-                console.error('[openapi-to-service] $ref not found:', definition.$ref);
-            }
-            return schema;
-        }
-        return definition;
     }
     getDefaultName(path, method, defined) {
         let name = defined.operationId ?? (0, utils_1.getPathLastName)(path);
@@ -122,10 +149,10 @@ class GeneratorService {
         const folderTree = {};
         const paths = Object.entries(this.apiPaths).reduce((arr, [path, methods]) => {
             const pathDefinition = Object.entries(methods).reduce((obj, [method, methodDefined]) => {
-                const methodDefinition = this.getMethodDefinition(methodDefined);
-                const defaultName = this.getDefaultName(path, method, methodDefinition);
+                const metadata = this.getMethodMetadata(path, method);
+                const defaultName = this.getDefaultName(path, method, metadata.definition);
                 let customName = this.config.hook.customName ? this.config.hook.customName({
-                    definition: methodDefinition,
+                    definition: metadata.definition,
                     path,
                     method
                 }, defaultName) : defaultName;
@@ -141,9 +168,9 @@ class GeneratorService {
                         console.error('[openapi-to-service] duplicate names in the sibling directory:', (0, util_1.format)('?/? ?:?', folderName, name, method, path));
                     }
                     else {
-                        folderTree[folderName].items[name] = { path, method, name };
+                        folderTree[folderName].items[name] = { path, method, name, metadata };
                     }
-                    obj[method] = methodDefinition;
+                    obj[method] = metadata.rawDefinition;
                 }
                 else {
                     delete obj[method];
@@ -175,7 +202,8 @@ class GeneratorService {
             apis,
             openapi: this.openApi,
             config: this.config,
-            getMethodMetadata: this.getMethodMetadata.bind(this),
+            format: util_1.format,
+            dump: (v) => JSON.stringify(v),
             pathAst,
         };
         await this.renderTemplateSave(path.join(outputDir, 'common.ts'), 'common', renderContext);

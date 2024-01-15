@@ -67,13 +67,6 @@ export interface paths {
      */
     delete: operations["deleteOrder"];
   };
-  "/store/inventory": {
-    /**
-     * Returns pet inventories by status
-     * @description Returns a map of status codes to quantities
-     */
-    get: operations["getInventory"];
-  };
   "/user/createWithArray": {
     /** Creates list of users with given input array */
     post: operations["createUsersWithArrayInput"];
@@ -117,21 +110,35 @@ export type webhooks = Record<string, never>;
 
 export interface components {
   schemas: {
-    UserArray: components["schemas"]["User"][];
-    User: {
+    ApiResponse: {
+      /** Format: int32 */
+      code?: number;
+      type?: string;
+      message?: string;
+    };
+    Category: {
       /** Format: int64 */
       id?: number;
-      username?: string;
-      firstName?: string;
-      lastName?: string;
-      email?: string;
-      password?: string;
-      phone?: string;
+      name?: string;
+    };
+    Pet: {
+      /** Format: int64 */
+      id?: number;
+      category?: components["schemas"]["Category"];
+      /** @example doggie */
+      name: string;
+      photoUrls: string[];
+      tags?: components["schemas"]["Tag"][];
       /**
-       * Format: int32
-       * @description User Status
+       * @description pet status in the store
+       * @enum {string}
        */
-      userStatus?: number;
+      status?: "available" | "pending" | "sold";
+    };
+    Tag: {
+      /** Format: int64 */
+      id?: number;
+      name?: string;
     };
     Order: {
       /** Format: int64 */
@@ -149,52 +156,36 @@ export interface components {
       status?: "placed" | "approved" | "delivered";
       complete?: boolean;
     };
-    Tag: {
+    User: {
       /** Format: int64 */
       id?: number;
-      name?: string;
-    };
-    Pet: {
-      /** Format: int64 */
-      id?: number;
-      category?: components["schemas"]["Category"];
-      name: string;
-      photoUrls: string[];
-      tags?: components["schemas"]["Tag"][];
+      username?: string;
+      firstName?: string;
+      lastName?: string;
+      email?: string;
+      password?: string;
+      phone?: string;
       /**
-       * @description pet status in the store
-       * @enum {string}
+       * Format: int32
+       * @description User Status
        */
-      status?: "available" | "pending" | "sold";
-    };
-    Category: {
-      /** Format: int64 */
-      id?: number;
-      name?: string;
-    };
-    ApiResponse: {
-      /** Format: int32 */
-      code?: number;
-      type?: string;
-      message?: string;
+      userStatus?: number;
     };
   };
   responses: never;
   parameters: never;
   requestBodies: {
-    Pet?: {
+    /** @description List of user object */
+    UserArray: {
+      content: {
+        "application/json": components["schemas"]["User"][];
+      };
+    };
+    /** @description Pet object that needs to be added to the store */
+    Pet: {
       content: {
         "application/json": components["schemas"]["Pet"];
-      };
-    };
-    UserArray?: {
-      content: {
-        "application/json": components["schemas"]["UserArray"];
-      };
-    };
-    User?: {
-      content: {
-        "application/json": components["schemas"]["User"];
+        "application/xml": components["schemas"]["Pet"];
       };
     };
   };
@@ -212,10 +203,7 @@ export interface operations {
   uploadFile: {
     parameters: {
       path: {
-        /**
-         * @description ID of pet to update
-         * @example
-         */
+        /** @description ID of pet to update */
         petId: number;
       };
     };
@@ -247,21 +235,15 @@ export interface operations {
     responses: {
       /** @description Invalid ID supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description Pet not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description Validation exception */
       405: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -271,9 +253,7 @@ export interface operations {
     responses: {
       /** @description Invalid input */
       405: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -285,7 +265,7 @@ export interface operations {
     parameters: {
       query: {
         /** @description Status values that need to be considered for filter */
-        status: string[];
+        status: ("available" | "pending" | "sold")[];
       };
     };
     responses: {
@@ -293,13 +273,12 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Pet"][];
+          "application/xml": components["schemas"]["Pet"][];
         };
       };
       /** @description Invalid status value */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -320,13 +299,12 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Pet"][];
+          "application/xml": components["schemas"]["Pet"][];
         };
       };
       /** @description Invalid tag value */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -337,10 +315,7 @@ export interface operations {
   getPetById: {
     parameters: {
       path: {
-        /**
-         * @description ID of pet to return
-         * @example
-         */
+        /** @description ID of pet to return */
         petId: number;
       };
     };
@@ -349,19 +324,16 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Pet"];
+          "application/xml": components["schemas"]["Pet"];
         };
       };
       /** @description Invalid ID supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description Pet not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -369,10 +341,7 @@ export interface operations {
   updatePetWithForm: {
     parameters: {
       path: {
-        /**
-         * @description ID of pet that needs to be updated
-         * @example
-         */
+        /** @description ID of pet that needs to be updated */
         petId: number;
       };
     };
@@ -389,9 +358,7 @@ export interface operations {
     responses: {
       /** @description Invalid input */
       405: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -399,35 +366,28 @@ export interface operations {
   deletePet: {
     parameters: {
       header?: {
-        /** @example */
         api_key?: string;
       };
       path: {
-        /**
-         * @description Pet id to delete
-         * @example
-         */
+        /** @description Pet id to delete */
         petId: number;
       };
     };
     responses: {
       /** @description Invalid ID supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description Pet not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
   /** Place an order for a pet */
   placeOrder: {
-    requestBody?: {
+    /** @description order placed for purchasing the pet */
+    requestBody: {
       content: {
         "application/json": components["schemas"]["Order"];
       };
@@ -437,13 +397,12 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Order"];
+          "application/xml": components["schemas"]["Order"];
         };
       };
       /** @description Invalid Order */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -454,10 +413,7 @@ export interface operations {
   getOrderById: {
     parameters: {
       path: {
-        /**
-         * @description ID of pet that needs to be fetched
-         * @example
-         */
+        /** @description ID of pet that needs to be fetched */
         orderId: number;
       };
     };
@@ -466,19 +422,16 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["Order"];
+          "application/xml": components["schemas"]["Order"];
         };
       };
       /** @description Invalid ID supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description Order not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -489,41 +442,18 @@ export interface operations {
   deleteOrder: {
     parameters: {
       path: {
-        /**
-         * @description ID of the order that needs to be deleted
-         * @example
-         */
+        /** @description ID of the order that needs to be deleted */
         orderId: number;
       };
     };
     responses: {
       /** @description Invalid ID supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description Order not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
-      };
-    };
-  };
-  /**
-   * Returns pet inventories by status
-   * @description Returns a map of status codes to quantities
-   */
-  getInventory: {
-    responses: {
-      /** @description successful operation */
-      200: {
-        content: {
-          "application/json": {
-            [key: string]: number;
-          };
-        };
+        content: never;
       };
     };
   };
@@ -532,10 +462,8 @@ export interface operations {
     requestBody: components["requestBodies"]["UserArray"];
     responses: {
       /** @description successful operation */
-      200: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+      default: {
+        content: never;
       };
     };
   };
@@ -544,10 +472,8 @@ export interface operations {
     requestBody: components["requestBodies"]["UserArray"];
     responses: {
       /** @description successful operation */
-      200: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+      default: {
+        content: never;
       };
     };
   };
@@ -555,10 +481,7 @@ export interface operations {
   getUserByName: {
     parameters: {
       path: {
-        /**
-         * @description The name that needs to be fetched. Use user1 for testing.
-         * @example
-         */
+        /** @description The name that needs to be fetched. Use user1 for testing. */
         username: string;
       };
     };
@@ -567,19 +490,16 @@ export interface operations {
       200: {
         content: {
           "application/json": components["schemas"]["User"];
+          "application/xml": components["schemas"]["User"];
         };
       };
       /** @description Invalid username supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description User not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -590,26 +510,24 @@ export interface operations {
   updateUser: {
     parameters: {
       path: {
-        /**
-         * @description name that need to be updated
-         * @example
-         */
+        /** @description name that need to be updated */
         username: string;
       };
     };
-    requestBody: components["requestBodies"]["User"];
+    /** @description Updated user object */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["User"];
+      };
+    };
     responses: {
       /** @description Invalid user supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description User not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -620,25 +538,18 @@ export interface operations {
   deleteUser: {
     parameters: {
       path: {
-        /**
-         * @description The name that needs to be deleted
-         * @example
-         */
+        /** @description The name that needs to be deleted */
         username: string;
       };
     };
     responses: {
       /** @description Invalid username supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
       /** @description User not found */
       404: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -655,15 +566,20 @@ export interface operations {
     responses: {
       /** @description successful operation */
       200: {
+        headers: {
+          /** @description date in UTC when token expires */
+          "X-Expires-After"?: string;
+          /** @description calls per hour allowed by the user */
+          "X-Rate-Limit"?: number;
+        };
         content: {
           "application/json": string;
+          "application/xml": string;
         };
       };
       /** @description Invalid username/password supplied */
       400: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+        content: never;
       };
     };
   };
@@ -671,10 +587,8 @@ export interface operations {
   logoutUser: {
     responses: {
       /** @description successful operation */
-      200: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+      default: {
+        content: never;
       };
     };
   };
@@ -683,13 +597,16 @@ export interface operations {
    * @description This can only be done by the logged in user.
    */
   createUser: {
-    requestBody: components["requestBodies"]["User"];
+    /** @description Created user object */
+    requestBody: {
+      content: {
+        "application/json": components["schemas"]["User"];
+      };
+    };
     responses: {
       /** @description successful operation */
-      200: {
-        content: {
-          "application/json": Record<string, never>;
-        };
+      default: {
+        content: never;
       };
     };
   };
