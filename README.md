@@ -1,7 +1,7 @@
 ## 介绍
 [![npm (scoped)](https://img.shields.io/npm/v/openapi-request)](https://www.npmjs.com/package/c2node/openapi-request)
 
-根据 [OpenApi2 | OpenApi3](https://swagger.io/blog/news/whats-new-in-openapi-3-0/) 文档快速生成 request 请求代码，默认生成使用的请求库axios，也可使用其定义请求方法。
+根据 [OpenApi2 | OpenApi3](https://swagger.io/blog/news/whats-new-in-openapi-3-0/) 文档快速生成 request 请求代码，默认生成使用的请求库axios，也可使用自定义请求方法。
 
 ## 使用
 1. 安装
