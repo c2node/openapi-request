@@ -1,11 +1,11 @@
-import {generateService} from "../src";
+import {generateRequest} from "../src";
 import * as path from "path";
 import * as fs from "fs";
 
 
 async function main() {
     // 网络openapi json
-    await generateService({
+    await generateRequest({
         // 导入自定义请求方法
         requestImport: "import {request,RequestOption} from \"../../fetch-request\"",
         // 自定义请求方法名称

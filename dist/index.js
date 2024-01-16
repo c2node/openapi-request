@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateService = exports.DefaultTemplateFolder = void 0;
+exports.generateRequest = exports.DefaultTemplateFolder = void 0;
 const fs = require("fs");
 const axios_1 = require("axios");
 const converter = require("swagger2openapi");
@@ -45,7 +45,7 @@ const getImportStatement = (requestImport) => {
     }
     return "import axios from \"axios\"";
 };
-async function generateService({ schemaPath, requestImport, requestFnName = 'axios.request', requestFnOtherParams = [], templatesFolder, serversPath, ...options }) {
+async function generateRequest({ schemaPath, requestImport, requestFnName = 'axios.request', requestFnOtherParams = [], templatesFolder, serversPath, ...options }) {
     const openAPI = await getOpenApi3Document(schemaPath);
     const generator = new generator_1.GeneratorService(openAPI, {
         serversPath: serversPath ? serversPath : process.cwd(),
@@ -58,4 +58,4 @@ async function generateService({ schemaPath, requestImport, requestFnName = 'axi
     });
     await generator.generator();
 }
-exports.generateService = generateService;
+exports.generateRequest = generateRequest;

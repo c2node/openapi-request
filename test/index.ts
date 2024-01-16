@@ -1,4 +1,4 @@
-import {generateService} from "../src";
+import {generateRequest} from "../src";
 import * as path from "path";
 import * as fs from "fs";
 
@@ -9,14 +9,14 @@ async function main() {
     const files = await fs.promises.readdir(openapiJsonDir);
     for (const filename of files) {
         const projectName = filename.replace('.json', '').replace('swagger.', '');
-        await generateService({
+        await generateRequest({
             schemaPath: path.join(openapiJsonDir, filename),
             serversPath: path.join(__dirname, 'service-files'),
             projectName: projectName,
         });
     }
     // 网络openapi json
-    await generateService({
+    await generateRequest({
         schemaPath:"https://petstore.swagger.io/v2/swagger.json",
         serversPath: path.join(__dirname, 'service-files'),
         projectName: "swagger",

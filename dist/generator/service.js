@@ -43,7 +43,7 @@ class GeneratorService {
             await fs.promises.writeFile(fileName, res);
         }
         catch (error) {
-            console.error('[openapi-to-service] file gen fail:', fileName, 'type:', type);
+            console.error('[openapi3-request] file gen fail:', fileName, 'type:', type);
             throw error;
         }
     }
@@ -77,7 +77,7 @@ class GeneratorService {
                 isExists = true;
             }
             else {
-                console.error('[openapi-to-service] directory create fail:', outputDir);
+                console.error('[openapi3-request] directory create fail:', outputDir);
             }
         }
         if (!isExists) {
@@ -138,7 +138,7 @@ class GeneratorService {
                         definition['requestBody'] = ref;
                     }
                     else {
-                        console.error('[openapi-to-service] $ref not found:', definition['requestBody']['$ref']);
+                        console.error('[openapi3-request] $ref not found:', definition['requestBody']['$ref']);
                     }
                 }
             }
@@ -162,7 +162,7 @@ class GeneratorService {
             return { definition, rawDefinition, params, contentType, responseType };
         }
         else {
-            console.error('[openapi-to-service] request not found:', `${method}:${path}`);
+            console.error('[openapi3-request] request not found:', `${method}:${path}`);
         }
     }
     getDefaultName(path, method, defined) {
@@ -192,7 +192,7 @@ class GeneratorService {
                         folderTree[folderName] = { pathNames: folderNames, items: {} };
                     }
                     if (folderTree[folderName].items[name]) {
-                        console.error('[openapi-to-service] duplicate names in the sibling directory:', (0, util_1.format)('?/? ?:?', folderName, name, method, path));
+                        console.error('[openapi3-request] duplicate names in the sibling directory:', (0, util_1.format)('?/? ?:?', folderName, name, method, path));
                     }
                     else {
                         folderTree[folderName].items[name] = { path, method, name, metadata };
@@ -223,7 +223,7 @@ class GeneratorService {
             pathAst = await openapiTS(this.openApi);
         }
         catch (e) {
-            console.error('[openapi-to-service] parse openapi document fail:', e.message);
+            console.error('[openapi3-request] parse openapi document fail:', e.message);
         }
         const renderContext = {
             apis,

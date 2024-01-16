@@ -36,7 +36,7 @@ async function getOpenApi3Document(schemaPath: string): Promise<OpenAPI3> {
         return document;
     }
     return new Promise((resolve, reject) => {
-        converter.convertObj(document, {mediatype:false}, (err, options) => {
+        converter.convertObj(document, {mediatype: false}, (err, options) => {
             if (err) {
                 reject(err);
                 return;
@@ -57,7 +57,7 @@ const getImportStatement = (requestImport: string) => {
     return "import axios from \"axios\"";
 };
 
-export async function generateService({
+export async function generateRequest({
                                           schemaPath,
                                           requestImport,
                                           requestFnName = 'axios.request',

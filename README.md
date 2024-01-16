@@ -1,16 +1,16 @@
 ## 介绍
-[![npm (scoped)](https://img.shields.io/npm/v/openapi-to-service)](https://www.npmjs.com/package/c2node/openapi-to-service)
+[![npm (scoped)](https://img.shields.io/npm/v/openapi3-request)](https://www.npmjs.com/package/c2node/openapi3-request)
 
 根据 [OpenApi3](https://swagger.io/blog/news/whats-new-in-openapi-3-0/) 文档快速生成 request 请求代码，默认生成使用的请求库axios，也可使用其定义请求方法。
 
 ## 使用
 1. 安装
     ```node
-    npm i --save-dev openapi-to-service openapi-typescript-helpers
+    npm i --save-dev openapi3-request openapi-typescript-helpers
     ```
 1. 在项目根目录新建 ```openapi.config.ts```
     ```ts
-    const { generateService } = require('openapi-to-service')
+    const { generateService } = require('openapi3-request')
 
     generateService({
         // Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径
@@ -44,7 +44,7 @@
 
     ```
 1. **示例参考**
-   [https://github.com/c2node/openapi-to-service/tree/main/test](https://github.com/c2node/openapi-to-service/tree/main/test)
+   [https://github.com/c2node/openapi3-request/tree/main/test](https://github.com/c2node/openapi3-request/tree/main/test)
 ## 自定义请求方法
 当使用axios外的请求库或需要对axios请求方法进行扩展可自定义请求方法进行实现
 1. 请求方法参数说明
@@ -71,13 +71,13 @@
 1. `fetch` 请求示例
    1. `src/fetch-request.ts`
    ```ts
-   import {ServiceRequestConfig} from "openapi-to-service/types";
+   import {Openapi3RequestConfig} from "openapi3-request/types";
 
 
    const baseUrl = 'http://127.0.0.1:8080';
    export type RequestOption = Omit<RequestInit, 'body'>;
 
-   export function request<Response>(config: ServiceRequestConfig, {
+   export function request<Response>(config: Openapi3RequestConfig, {
        headers: _headers = {},
        ...option
    }: RequestOption = {}) {
@@ -130,7 +130,7 @@
    ``` 
    1. `openapi.config.ts`
    ```ts
-       const { generateService } = require('openapi-to-service')
+       const { generateService } = require('openapi3-request')
        await generateService({
            // 导入自定义请求方法
            requestImport: "import {request,RequestOption} from \"src/fetch-request\"",
@@ -160,7 +160,7 @@
        });
    ``` 
    1. 生成代码参照
-      [https://github.com/c2node/openapi-to-service/tree/main/test/service-files/swagger-fetch](https://github.com/c2node/openapi-to-service/tree/main/test/service-files/swagger-fetch)
+      [https://github.com/c2node/openapi3-request/tree/main/test/service-files/swagger-fetch](https://github.com/c2node/openapi3-request/tree/main/test/service-files/swagger-fetch)
 ## 参数
 |  属性   | 必填  | 备注 | 类型 | 默认值 |
 |  ----  | ----  |  ----  |  ----  | - |
