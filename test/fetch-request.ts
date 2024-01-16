@@ -1,10 +1,10 @@
-import {Openapi3RequestConfig} from "../src/types";
+import {OpenapiRequestConfig} from "../src/types";
 
 
 const baseUrl = 'http://127.0.0.1:8080';
 export type RequestOption = Omit<RequestInit, 'body'>;
 
-export function request<Response>(config: Openapi3RequestConfig, {
+export function request<Response>(config: OpenapiRequestConfig, {
     headers: _headers = {},
     ...option
 }: RequestOption = {}) {

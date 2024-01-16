@@ -1,5 +1,5 @@
 {
-  "name": "openapi3-request",
+  "name": "openapi-request",
   "version": "1.0.0",
   "description": "Swagger 2.0 and OpenAPI 3.x to TypeScript Request Client",
   "main": "dist/index.js",

@@ -46,7 +46,7 @@ export type GenerateServiceProps = {
 };
 
 // 请求服务参数1
-export interface Openapi3RequestConfig {
+export interface OpenapiRequestConfig {
     // 请求 url path
     url: string,
     // 请求方法
