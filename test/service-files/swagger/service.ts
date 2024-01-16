@@ -15,7 +15,7 @@ export const pet = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),
@@ -30,7 +30,7 @@ export const pet = {
             return axios.request<T['response']>({
                 url: formatPathVals(url, ["petId"], params),
                 method,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),
@@ -91,7 +91,7 @@ export const pet = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),
@@ -107,7 +107,7 @@ export const pet = {
                 url: formatPathVals(url, ["petId"], params),
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),
@@ -123,7 +123,7 @@ export const pet = {
                 url: formatPathVals(url, ["petId"], params),
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
                 responseType: "json",
             });
         }
@@ -183,7 +183,7 @@ export const store = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
                 responseType: "json",
             });
         }
@@ -203,7 +203,7 @@ export const user = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),
@@ -219,7 +219,7 @@ export const user = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),
@@ -235,7 +235,7 @@ export const user = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),
@@ -304,7 +304,7 @@ export const user = {
                 url: formatPathVals(url, ["username"], params),
                 method,
                 data: body,
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
             });
         }
     }),

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import {OperationObject} from "openapi-typescript/src/types";
+import {OperationObject, ParameterObject} from "openapi-typescript/src/types";
 
 export * from "openapi-typescript-helpers";
 
@@ -14,6 +14,10 @@ export type GenerateServiceProps = {
      * 请求方法名称，默认为 axios.request
      */
     requestFnName?: string;
+    /**
+     * 生产胡请求方法Params包含的参数,默认 {path:true,query:true,header:true,cookie:true}
+     */
+    requestParams?: Record<'path' | 'query' | 'header' | 'cookie', boolean>;
     /**
      * 请求方法其他可选参数
      */
@@ -32,6 +36,12 @@ export type GenerateServiceProps = {
     projectName?: string;
 
     hook?: {
+        /** 自定义请求方法params参数,参数中如需排除该参数请返回 false */
+        customRequestParams?: (data: {
+            path: string,
+            method: string,
+            definition: OperationObject
+        }, field: ParameterObject) => boolean,
         /** 自定义函数名称 */
         customName?: (data: {
             path: string,

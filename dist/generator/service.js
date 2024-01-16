@@ -117,17 +117,30 @@ class GeneratorService {
     }
     getMethodMetadata(path, method) {
         const paths = this.apiPaths;
+        const { customRequestParams } = this.config.hook;
         if (paths[path] && paths[path][method]) {
             const rawDefinition = paths[path][method];
             const definition = { ...rawDefinition };
             const { parameters = [], requestBody } = definition;
             const params = parameters.reduce((obj, parameter) => {
-                if (!obj[parameter.in]) {
-                    obj[parameter.in] = { keys: [], required: [] };
-                }
-                obj[parameter.in].keys.push(parameter.name);
-                if (parameter.required) {
-                    obj[parameter.in].required.push(parameter.name);
+                if (this.config.requestParams[parameter.in]) {
+                    const has = customRequestParams ? customRequestParams({
+                        path,
+                        method,
+                        definition
+                    }, { ...parameter }) : true;
+                    if (has) {
+                        if (!obj[parameter.in]) {
+                            obj[parameter.in] = { keys: [], required: [], all: true };
+                        }
+                        obj[parameter.in].keys.push(parameter.name);
+                        if (parameter.required) {
+                            obj[parameter.in].required.push(parameter.name);
+                        }
+                    }
+                    else if (obj[parameter.in]) {
+                        obj[parameter.in].all = false;
+                    }
                 }
                 return obj;
             }, {});

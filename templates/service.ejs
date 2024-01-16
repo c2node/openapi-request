@@ -18,7 +18,7 @@ export const <%- api.name %> = {
     <%- item.name %>: $$$(<%- JSON.stringify(item.path) %>, <%- JSON.stringify(item.method) %>, (url, method) => {
         type T = RequestType<typeof url, typeof method>;
         <%_ // 处理请求参数
-			const paramsType = Object.keys(params).filter(type => type !== "body").map(type => format('T["%s"]', type));
+			const paramsType = Object.keys(params).filter(type => type !== "body").map(type => format(params[type].all?'T["%s"]':`Omit<T["%s"],"${params[type].keys.join('" | "')}">`, type));
 			const requestOptions = paramsType.length ? [`params: ${paramsType.join(" & ")}`] : [];
 			if(params.body){
 				requestOptions.push(`body: T["body"]`);
@@ -27,6 +27,23 @@ export const <%- api.name %> = {
                 config.requestFnOtherParams.forEach(({name,type})=>{
                     requestOptions.push(`${name}?: ${type}`);
                 });
+            }
+            let resType="T['response']";
+            if(responseType.length){
+				switch(responseType[0]){
+					case "arraybuffer":{
+						resType = "ArrayBuffer";
+						break;
+					}
+					case "blob":{
+						resType = "Blob";
+						break;
+					}
+					case "text":{
+						resType = "string";
+						break;
+					}
+				}
             }
 		_%>
         return function (<%- requestOptions.join(", ") %>) {
@@ -42,7 +59,7 @@ export const <%- api.name %> = {
 			setHeader(headers, <%- dump(params.cookie.keys) %>, params, true);
 			<%_ } _%>
 		<%_ } _%>
-            return <%- config.requestFnName %><T['response']>({
+            return <%- config.requestFnName %><<%- resType %>>({
                 url<%- params.path?.keys.length ? `: formatPathVals(url, ${JSON.stringify(params.path.keys)}, params)` : "" %>,
                 method,
                 <%_ if(params.query){ _%>
@@ -55,7 +72,7 @@ export const <%- api.name %> = {
                 withCredentials: true,
                 <%_ } _%>
                 <%_ if(contentType.length||params.header||params.cookie){ _%>
-                headers: Object.fromEntries(Object.entries(headers)),
+                headers: Object.fromEntries(headers.entries()),
                 <%_ } _%>
                 <%_ if(responseType.length){ _%>
                 responseType: <%- dump(responseType[0]) %>,

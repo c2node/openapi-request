@@ -12,7 +12,7 @@ import type {
 export type FetchResponse<T> =
     FilterKeys<SuccessResponse<ResponseObjectMap<T>>, MediaType>
     | FilterKeys<ErrorResponse<ResponseObjectMap<T>>, MediaType>;
-type PickType<T, K extends string> = T extends { [key in K]: any }
+type PickType<T, K extends string> = T extends { [key in K]?: any }
     ? T[K]
     : never;
 export type RequestType<P extends keyof paths,
@@ -45,18 +45,22 @@ export function formatPathVals(urlPath: string, keys: string[], vals: Record<str
 }
 // 添加header头
 export function setHeader(header: Headers, keys: string[], vals: Record<string, string | number | (string | number)[]>, isCookie = false) {
-    return keys.length ? keys.reduce((h, key) => {
+  return keys.length ? keys.reduce((h, key) => {
         let val = vals[key];
         if (Array.isArray(val)) {
             val.forEach(v => {
                 const _v = encodeURIComponent(v);
-                isCookie ? h.getSetCookie().push(`${key}=${_v}`) : h.append(key, `${_v}`);
+                isCookie ? h.append("Cookie",`${key}=${_v}`) : h.append(key, `${_v}`);
             });
         } else {
             const _v = encodeURIComponent(val);
-            isCookie ? h.getSetCookie().push(`${key}=${_v}`) : h.append(key, `${_v}`);
+            isCookie ? h.append("Cookie",`${key}=${_v}`) : h.append(key, `${_v}`);
         }
         delete vals[key];
         return h;
     }, header) : header
 }
+// 获取请求响应
+export type ReturnRequestResponse<T extends (...args: any) => any>=Awaited<ReturnType<T>>
+// 获取请求参数
+export type ReturnRequestParams<T extends (...args: any) => any>=Parameters<T>

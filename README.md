@@ -1,7 +1,7 @@
 ## 介绍
 [![npm (scoped)](https://img.shields.io/npm/v/openapi-request)](https://www.npmjs.com/package/c2node/openapi-request)
 
-根据 [OpenApi3](https://swagger.io/blog/news/whats-new-in-openapi-3-0/) 文档快速生成 request 请求代码，默认生成使用的请求库axios，也可使用其定义请求方法。
+根据 [OpenApi2 | OpenApi3](https://swagger.io/blog/news/whats-new-in-openapi-3-0/) 文档快速生成 request 请求代码，默认生成使用的请求库axios，也可使用其定义请求方法。
 
 ## 使用
 1. 安装
@@ -166,9 +166,11 @@
 |  ----  | ----  |  ----  |  ----  | - |
 | requestImport  | 否 | 导入自定义请求方法 | string | import axios from "axios" |
 | requestFnName  | 否 | 自定义请求方法名称 | string | axios.request |
+| requestParams | 否 | 生产胡请求方法Params包含的参数 | Record<'path' \| 'query' \| 'header' \| 'cookie', boolean> | {path:true,query:true,header:true,cookie:true} |
 | requestFnOtherParams | 否 | 自定义请求方法其他可选参数 | { name: string, type: string }[] | [] |
 | serversPath  | 否 | 生成的文件夹的路径 | string | - |
 | schemaPath  | 是 | Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径 | string | - |
 | projectName  | 否 | 项目名称,如果有将在 serversPath 下创建文件夹 | string | - |
 | templatesFolder | 否 | 自定义模板文件的文件路径 | string | - |
 | hook.customName | 否 | 自定义请求函数名称，目录名称 | {name:"函数名称",folder:"目录名称"} | - |
+| hook.customRequestParams | 否 | 自定义请求方法params参数,参数中如需排除该参数请返回 false | boolean | -- |
