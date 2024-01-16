@@ -60,6 +60,14 @@ export function setHeader(header: Headers, keys: string[], vals: Record<string, 
         return h;
     }, header) : header
 }
+// 获取header object
+export function getHeaderObj(header: Headers) {
+  const obj: Record<string, string> = {};
+  header.forEach((value, key) => {
+    obj[key] = value;
+  });
+  return obj;
+}
 // 获取请求响应
 export type ReturnRequestResponse<T extends (...args: any) => any>=Awaited<ReturnType<T>>
 // 获取请求参数

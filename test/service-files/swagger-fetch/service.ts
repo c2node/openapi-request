@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-import {$$$, formatPathVals, setHeader, RequestType} from "./common";
+import {$$$, formatPathVals, setHeader, getHeaderObj, RequestType} from "./common";
 import {request,RequestOption} from "../../fetch-request";
 export const pet = {
     /**
@@ -15,7 +15,7 @@ export const pet = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),
@@ -30,7 +30,7 @@ export const pet = {
             return request<T['response']>({
                 url: formatPathVals(url, ["petId"], params),
                 method,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),
@@ -91,7 +91,7 @@ export const pet = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),
@@ -107,7 +107,7 @@ export const pet = {
                 url: formatPathVals(url, ["petId"], params),
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),
@@ -123,7 +123,7 @@ export const pet = {
                 url: formatPathVals(url, ["petId"], params),
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
                 responseType: "json",
             }, option);
         }
@@ -169,7 +169,7 @@ export const store = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
                 responseType: "json",
             }, option);
         }
@@ -204,7 +204,7 @@ export const user = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),
@@ -220,7 +220,7 @@ export const user = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),
@@ -236,7 +236,7 @@ export const user = {
                 url,
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),
@@ -292,7 +292,7 @@ export const user = {
                 url: formatPathVals(url, ["username"], params),
                 method,
                 data: body,
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
             }, option);
         }
     }),

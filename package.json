@@ -1,6 +1,6 @@
 {
   "name": "openapi-request",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Swagger 2.0 and OpenAPI 3.x to TypeScript Request Client",
   "main": "dist/index.js",
   "bin": "dist/bin.js",
@@ -22,7 +22,7 @@
   "author": "chuchunhong",
   "repository": {
     "type": "git",
-    "url": "git+git@github.com:c2node/openapi-to-service.git"
+    "url": "git+git@github.com:c2node/openapi-request.git"
   },
   "files": [
     "dist",

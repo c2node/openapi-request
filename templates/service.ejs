@@ -1,6 +1,6 @@
 // @ts-ignore
 /* eslint-disable */
-<%- `import {$$$, formatPathVals, setHeader, RequestType} from "./common";
+<%- `import {$$$, formatPathVals, setHeader, getHeaderObj, RequestType} from "./common";
 ${config.requestImport};` %>
 <%_ apis.forEach((api)=>{ _%>
 export const <%- api.name %> = {
@@ -72,7 +72,7 @@ export const <%- api.name %> = {
                 withCredentials: true,
                 <%_ } _%>
                 <%_ if(contentType.length||params.header||params.cookie){ _%>
-                headers: Object.fromEntries(headers.entries()),
+                headers: getHeaderObj(headers),
                 <%_ } _%>
                 <%_ if(responseType.length){ _%>
                 responseType: <%- dump(responseType[0]) %>,
