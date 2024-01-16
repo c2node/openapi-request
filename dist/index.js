@@ -27,7 +27,7 @@ async function getOpenApi3Document(schemaPath) {
         return document;
     }
     return new Promise((resolve, reject) => {
-        converter.convertObj(document, {}, (err, options) => {
+        converter.convertObj(document, { mediatype: false }, (err, options) => {
             if (err) {
                 reject(err);
                 return;

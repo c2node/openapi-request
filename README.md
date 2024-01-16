@@ -63,7 +63,7 @@
        // body参数
        data?: Record<string, any> | FormData,
        // 响应类型
-       responseType?:string,
+       responseType?: 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream',
    }
    ```
 

@@ -51,6 +51,12 @@ export function request<Response>(config: ServiceRequestConfig, {
         if (responseType === 'json') {
             return res.json() as Response
         }
+        if (responseType === 'blob') {
+            return res.blob() as Response;
+        }
+        if (responseType === 'arraybuffer') {
+            return res.arrayBuffer() as Response;
+        }
         return res.text() as Response;
     })
 }

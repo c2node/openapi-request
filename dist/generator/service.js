@@ -88,6 +88,33 @@ class GeneratorService {
     getRef(ref) {
         return (0, utils_1.getByPath)(this.openApi, (0, utils_1.urlPathSplit)(ref.replace(/^#+\/?/, '')));
     }
+    formatResponseType(mime) {
+        let type = (0, utils_1.urlPathSplit)(mime).pop().toLowerCase();
+        switch (type) {
+            case 'json': {
+                return type;
+            }
+            case 'xml':
+            case 'html': {
+                return 'document';
+            }
+            case 'plain': {
+                return 'text';
+            }
+            case 'octet-stream': {
+                return 'blob';
+            }
+            case 'x-msgpack': {
+                return 'arraybuffer';
+            }
+            case 'event-stream': {
+                return 'stream';
+            }
+            default: {
+                return 'blob';
+            }
+        }
+    }
     getMethodMetadata(path, method) {
         const paths = this.apiPaths;
         if (paths[path] && paths[path][method]) {
@@ -124,7 +151,7 @@ class GeneratorService {
                 Object.values(definition['responses']).forEach(({ content }) => {
                     if (content) {
                         Object.keys(content).forEach(resType => {
-                            const type = (0, utils_1.urlPathSplit)(resType).pop();
+                            const type = this.formatResponseType(resType);
                             if (!responseType.includes(type)) {
                                 responseType.push(type);
                             }

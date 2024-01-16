@@ -5,16 +5,16 @@ import {format} from "util";
 import * as openapiTS from "openapi-typescript";
 import * as ejs from "ejs";
 // @ts-nocheck
-import type {
+import {
     OpenAPI3,
     OperationObject,
     PathsObject,
-    ReferenceObject,
-    ParameterObject
+    ParameterObject, ResponseObject
 } from "openapi-typescript/src/types";
 import {getByPath, getPathLastName, resolveIdentifier, urlPathSplit} from "../utils";
 import {DefaultTemplateFolder} from "../index";
-import transformMediaTypeObject from "openapi-typescript/dist/transform/media-type-object";
+import * as process from "process";
+import {ResponseType} from "axios";
 
 export type TemplateFileType = 'common' | 'service' | 'index';
 
@@ -125,6 +125,39 @@ export class GeneratorService {
         return getByPath(this.openApi, urlPathSplit(ref.replace(/^#+\/?/, '')));
     }
 
+    /**
+     * 格式化响应类型
+     * @param mime
+     * @protected
+     */
+    protected formatResponseType(mime: string): ResponseType {
+        let type = urlPathSplit(mime).pop().toLowerCase();
+        switch (type) {
+            case 'json': {
+                return type;
+            }
+            case 'xml':
+            case 'html': {
+                return 'document';
+            }
+            case 'plain': {
+                return 'text';
+            }
+            case 'octet-stream': {
+                return 'blob';
+            }
+            case 'x-msgpack': {
+                return 'arraybuffer';
+            }
+            case 'event-stream': {
+                return 'stream';
+            }
+            default: {
+                return 'blob';
+            }
+        }
+    }
+
     protected getMethodMetadata(path: string, method: string) {
         const paths = this.apiPaths;
         if (paths[path] && paths[path][method]) {
@@ -157,10 +190,10 @@ export class GeneratorService {
             }
             const responseType: string[] = [];
             if (definition['responses']) {
-                Object.values(definition['responses']).forEach(({content}) => {
+                Object.values(definition['responses']).forEach(({content}: ResponseObject) => {
                     if (content) {
                         Object.keys(content).forEach(resType => {
-                            const type = urlPathSplit(resType).pop();
+                            const type = this.formatResponseType(resType);
                             if (!responseType.includes(type)) {
                                 responseType.push(type);
                             }
@@ -168,7 +201,7 @@ export class GeneratorService {
                     }
                 });
             }
-            return {definition,rawDefinition, params, contentType, responseType};
+            return {definition, rawDefinition, params, contentType, responseType};
         } else {
             console.error('[openapi-to-service] request not found:', `${method}:${path}`);
         }

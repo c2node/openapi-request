@@ -1,5 +1,7 @@
 // @ts-nocheck
-import type {OperationObject} from "openapi-typescript/src/types";
+import {OperationObject} from "openapi-typescript/src/types";
+
+export * from "openapi-typescript-helpers";
 
 export type GenerateCustomNames = { name: string, folder: string };
 
@@ -42,6 +44,7 @@ export type GenerateServiceProps = {
      */
     templatesFolder?: string;
 };
+
 // 请求服务参数1
 export interface ServiceRequestConfig {
     // 请求 url path
@@ -57,5 +60,5 @@ export interface ServiceRequestConfig {
     // body参数
     data?: Record<string, any> | FormData,
     // 响应类型
-    responseType?: string,
+    responseType?: 'arraybuffer' | 'blob' | 'document' | 'json' | 'text' | 'stream',
 }
