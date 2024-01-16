@@ -1,16 +1,16 @@
 ## 介绍
-[![npm (scoped)](https://img.shields.io/npm/v/openapi3-request)](https://www.npmjs.com/package/c2node/openapi3-request)
+[![npm (scoped)](https://img.shields.io/npm/v/openapi-request)](https://www.npmjs.com/package/c2node/openapi-request)
 
 根据 [OpenApi3](https://swagger.io/blog/news/whats-new-in-openapi-3-0/) 文档快速生成 request 请求代码，默认生成使用的请求库axios，也可使用其定义请求方法。
 
 ## 使用
 1. 安装
     ```node
-    npm i --save-dev openapi3-request openapi-typescript-helpers
+    npm i --save-dev openapi-request openapi-typescript-helpers
     ```
 1. 在项目根目录新建 ```openapi.config.ts```
     ```ts
-    const { generateService } = require('openapi3-request')
+    const { generateService } = require('openapi-request')
 
     generateService({
         // Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径
@@ -44,14 +44,14 @@
 
     ```
 1. **示例参考**
-   [https://github.com/c2node/openapi3-request/tree/main/test](https://github.com/c2node/openapi3-request/tree/main/test)
+   [https://github.com/c2node/openapi-request/tree/main/test](https://github.com/c2node/openapi-request/tree/main/test)
 ## 自定义请求方法
 当使用axios外的请求库或需要对axios请求方法进行扩展可自定义请求方法进行实现
 1. 请求方法参数说明
    请求方法默认接受2个参数，参数2和其他参数可通过`requestFnOtherParams`进行配置，需要注意的是：**除参数1外，都是可选参数**
-   - 参数1:ServiceRequestConfig
+   - 参数1:OpenapiRequestConfig
    ```ts
-   export interface ServiceRequestConfig {
+   export interface OpenapiRequestConfig {
        url: string,
        method: string,
        // 是否允许跨站点提交请求，携带Cookie需要
@@ -71,13 +71,13 @@
 1. `fetch` 请求示例
    1. `src/fetch-request.ts`
    ```ts
-   import {Openapi3RequestConfig} from "openapi3-request/types";
+   import {OpenapiRequestConfig} from "openapi-request/types";
 
 
    const baseUrl = 'http://127.0.0.1:8080';
    export type RequestOption = Omit<RequestInit, 'body'>;
 
-   export function request<Response>(config: Openapi3RequestConfig, {
+   export function request<Response>(config: OpenapiRequestConfig, {
        headers: _headers = {},
        ...option
    }: RequestOption = {}) {
@@ -130,7 +130,7 @@
    ``` 
    1. `openapi.config.ts`
    ```ts
-       const { generateService } = require('openapi3-request')
+       const { generateService } = require('openapi-request')
        await generateService({
            // 导入自定义请求方法
            requestImport: "import {request,RequestOption} from \"src/fetch-request\"",
@@ -160,7 +160,7 @@
        });
    ``` 
    1. 生成代码参照
-      [https://github.com/c2node/openapi3-request/tree/main/test/service-files/swagger-fetch](https://github.com/c2node/openapi3-request/tree/main/test/service-files/swagger-fetch)
+      [https://github.com/c2node/openapi-request/tree/main/test/service-files/swagger-fetch](https://github.com/c2node/openapi-request/tree/main/test/service-files/swagger-fetch)
 ## 参数
 |  属性   | 必填  | 备注 | 类型 | 默认值 |
 |  ----  | ----  |  ----  |  ----  | - |

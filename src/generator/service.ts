@@ -67,7 +67,7 @@ export class GeneratorService {
             const res = await template(type, params);
             await fs.promises.writeFile(fileName, res);
         } catch (error) {
-            console.error('[openapi3-request] file gen fail:', fileName, 'type:', type);
+            console.error('[openapi-request] file gen fail:', fileName, 'type:', type);
             throw error;
         }
     }
@@ -112,7 +112,7 @@ export class GeneratorService {
                 await this.clearDir(outputDir);
                 isExists = true;
             } else {
-                console.error('[openapi3-request] directory create fail:', outputDir);
+                console.error('[openapi-request] directory create fail:', outputDir);
             }
         }
         if (!isExists) {
@@ -180,7 +180,7 @@ export class GeneratorService {
                     if (ref) {
                         definition['requestBody'] = ref;
                     } else {
-                        console.error('[openapi3-request] $ref not found:', definition['requestBody']['$ref']);
+                        console.error('[openapi-request] $ref not found:', definition['requestBody']['$ref']);
                     }
                 }
             }
@@ -203,7 +203,7 @@ export class GeneratorService {
             }
             return {definition, rawDefinition, params, contentType, responseType};
         } else {
-            console.error('[openapi3-request] request not found:', `${method}:${path}`);
+            console.error('[openapi-request] request not found:', `${method}:${path}`);
         }
     }
 
@@ -241,7 +241,7 @@ export class GeneratorService {
                         folderTree[folderName] = {pathNames: folderNames, items: {}};
                     }
                     if (folderTree[folderName].items[name]) {
-                        console.error('[openapi3-request] duplicate names in the sibling directory:', format('?/? ?:?', folderName, name, method, path));
+                        console.error('[openapi-request] duplicate names in the sibling directory:', format('?/? ?:?', folderName, name, method, path));
                     } else {
                         folderTree[folderName].items[name] = {path, method, name, metadata};
                     }
@@ -271,7 +271,7 @@ export class GeneratorService {
         try {
             pathAst = await (openapiTS as any)(this.openApi);
         } catch (e) {
-            console.error('[openapi3-request] parse openapi document fail:', e.message);
+            console.error('[openapi-request] parse openapi document fail:', e.message);
         }
         const renderContext = {
             apis,
