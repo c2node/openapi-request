@@ -15,6 +15,7 @@ export declare class GeneratorService {
     protected getOutputDir(): Promise<string>;
     protected getRef(ref: string): unknown;
     protected formatResponseType(mime: string): ResponseType;
+    protected operationIdMap: Map<any, any>;
     protected getMethodMetadata(path: string, method: string): {
         definition: any;
         rawDefinition: any;

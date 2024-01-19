@@ -2,7 +2,8 @@ import {GenerateCustomNames, GenerateServiceProps} from "../types";
 import * as fs from "fs";
 import * as path from "path";
 import {format} from "util";
-import * as openapiTS from "openapi-typescript";
+import * as openApiTS from "openapi-typescript";
+import type {OpenAPITSOptions} from "openapi-typescript";
 import * as ejs from "ejs";
 // @ts-nocheck
 import {
@@ -158,9 +159,12 @@ export class GeneratorService {
         }
     }
 
+    protected operationIdMap = new Map();
+
     protected getMethodMetadata(path: string, method: string) {
         const paths = this.apiPaths;
         const {customRequestParams} = this.config.hook;
+        //
         if (paths[path] && paths[path][method]) {
             const rawDefinition = paths[path][method];
             const definition = {...rawDefinition};
@@ -212,6 +216,13 @@ export class GeneratorService {
                         });
                     }
                 });
+            }
+            // 重新映射operationId,以防止项目中operationId重复，导致生成的parameters or responses 类型错误问题
+            const methodKey = `${method}:${path}`;
+            if (!this.operationIdMap.has(methodKey)) {
+                const id = `$$${this.operationIdMap.size + 1}$$`;
+                this.operationIdMap.set(methodKey, id);
+                rawDefinition.operationId = id;
             }
             return {definition, rawDefinition, params, contentType, responseType};
         } else {
@@ -281,7 +292,7 @@ export class GeneratorService {
             });
         let pathAst = '';
         try {
-            pathAst = await (openapiTS as any)(this.openApi);
+            pathAst = await (openApiTS as any)(this.openApi, {} as OpenAPITSOptions);
         } catch (e) {
             console.error('[openapi-request] parse openapi document fail:', e.message);
         }

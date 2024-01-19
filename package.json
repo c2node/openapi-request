@@ -1,6 +1,6 @@
 {
   "name": "openapi-request",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Swagger 2.0 and OpenAPI 3.x to TypeScript Request Client",
   "main": "dist/index.js",
   "bin": "dist/bin.js",
@@ -48,7 +48,7 @@
   "dependencies": {
     "axios": "^1.6.5",
     "ejs": "^3.1.9",
-    "openapi-typescript": "^6.7.3",
+    "openapi-typescript": "^6.7.4",
     "openapi-typescript-helpers": "^0.0.6",
     "reserved-words": "^0.1.2",
     "swagger2openapi": "^7.0.8",

@@ -4,7 +4,7 @@ exports.GeneratorService = void 0;
 const fs = require("fs");
 const path = require("path");
 const util_1 = require("util");
-const openapiTS = require("openapi-typescript");
+const openApiTS = require("openapi-typescript");
 const ejs = require("ejs");
 const utils_1 = require("../utils");
 const index_1 = require("../index");
@@ -115,6 +115,7 @@ class GeneratorService {
             }
         }
     }
+    operationIdMap = new Map();
     getMethodMetadata(path, method) {
         const paths = this.apiPaths;
         const { customRequestParams } = this.config.hook;
@@ -171,6 +172,12 @@ class GeneratorService {
                         });
                     }
                 });
+            }
+            const methodKey = `${method}:${path}`;
+            if (!this.operationIdMap.has(methodKey)) {
+                const id = `$$${this.operationIdMap.size + 1}$$`;
+                this.operationIdMap.set(methodKey, id);
+                rawDefinition.operationId = id;
             }
             return { definition, rawDefinition, params, contentType, responseType };
         }
@@ -233,7 +240,7 @@ class GeneratorService {
         });
         let pathAst = '';
         try {
-            pathAst = await openapiTS(this.openApi);
+            pathAst = await openApiTS(this.openApi, {});
         }
         catch (e) {
             console.error('[openapi-request] parse openapi document fail:', e.message);
