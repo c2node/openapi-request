@@ -10,24 +10,27 @@
     ```
 1. 在项目根目录新建 ```openapi.config.ts```
     ```ts
-    const { generateService } = require('openapi-request')
+    const { generateRequest } = require('openapi-request')
 
-    generateService({
+    generateRequest({
         // Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径
         schemaPath: 'http://petstore.swagger.io/v2/swagger.json',
         // 生成的文件夹的路径
         serversPath: './servers',
         // 项目名称,如果有将在 serversPath 下创建文件夹，适用于一个项目有多个请求服务
         projectName: "swagger",
+        // 自定义导出的接口名称
+        exportName: 'api',
         // hook 示例
         hook:{
             // 自定义请求函数名称，目录名称
             customName({path,method,definition},defaultName){
                 if(path==="/test/test"){
+                    // 返回false，不生成该接口
                     return false;
                 }
                 if (path === '/system/menu/list') {
-                return {folder:"system",name:"getMenuList"};
+                    return {folder:"system",name:"getMenuList"};
                 }
                 return defaultName;
             }

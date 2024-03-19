@@ -34,6 +34,10 @@ export type GenerateServiceProps = {
      * 项目名称,如果有将在 serversPath 下创建文件夹
      */
     projectName?: string;
+    /**
+     * 导出的api名称
+     */
+    exportName?: string;
 
     hook?: {
         /** 自定义请求方法params参数,参数中如需排除该参数请返回 false */
