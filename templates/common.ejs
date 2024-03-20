@@ -34,7 +34,7 @@ export function $$$<
 }
 // 格式化url路径中的变量
 export function formatPathVals(urlPath: string, keys: string[], vals: Record<string, string | number | (string | number)[]>) {
-    return keys.length ? keys.reduce((str, key) => {
+    return vals && keys.length ? keys.reduce((str, key) => {
         let val = vals[key];
         if (Array.isArray(val)) {
             val = val.join(',')
@@ -45,7 +45,7 @@ export function formatPathVals(urlPath: string, keys: string[], vals: Record<str
 }
 // 添加header头
 export function setHeader(header: Headers, keys: string[], vals: Record<string, string | number | (string | number)[]>, isCookie = false) {
-  return keys.length ? keys.reduce((h, key) => {
+  return vals && keys.length ? keys.reduce((h, key) => {
         let val = vals[key];
         if (Array.isArray(val)) {
             val.forEach(v => {
