@@ -190,14 +190,15 @@ class GeneratorService {
         const pathItems = (0, utils_1.urlPathSplit)(path);
         let tag = defined.tags.length ? defined.tags[defined.tags.length - 1] : undefined;
         tag = tag ?? (pathItems.length > 1 ? pathItems[pathItems.length - 2] : '');
-        return { name: (0, utils_1.resolveIdentifier)(name), folder: (0, utils_1.resolveIdentifier)(tag) };
+        const folderLabel = (0, utils_1.resolveIdentifier)(tag, false);
+        return { name: (0, utils_1.resolveIdentifier)(name), folder: (0, utils_1.toPinyin)(folderLabel), folderLabel };
     }
     async generator() {
         const folderTree = {};
         const paths = Object.entries(this.apiPaths).reduce((arr, [path, methods]) => {
             const pathDefinition = Object.entries(methods).reduce((obj, [method, methodDefined]) => {
                 const metadata = this.getMethodMetadata(path, method);
-                const defaultName = this.getDefaultName(path, method, metadata.definition);
+                const { folderLabel, ...defaultName } = this.getDefaultName(path, method, metadata.definition);
                 let customName = this.config.hook.customName ? this.config.hook.customName({
                     definition: metadata.definition,
                     path,
@@ -209,7 +210,7 @@ class GeneratorService {
                     const folderNames = (0, utils_1.urlPathSplit)(folder);
                     const folderName = folderNames.join('.');
                     if (!folderTree[folderName]) {
-                        folderTree[folderName] = { pathNames: folderNames, items: {} };
+                        folderTree[folderName] = { pathNames: folderNames, label: folderLabel, items: {} };
                     }
                     if (folderTree[folderName].items[name]) {
                         console.error('[openapi-request] duplicate names in the sibling directory:', (0, util_1.format)('?/? ?:?', folderName, name, method, path));
@@ -234,9 +235,10 @@ class GeneratorService {
         const apis = Object.keys(folderTree)
             .sort((a, b) => a.localeCompare(b))
             .map((name) => {
+            const { label } = folderTree[name];
             const items = Object.values(folderTree[name].items);
             items.sort((a, b) => a.name.localeCompare(b.name));
-            return { name, items };
+            return { name, label, items };
         });
         let pathAst = '';
         try {
@@ -256,6 +258,29 @@ class GeneratorService {
         await this.renderTemplateSave(path.join(outputDir, 'common.ts'), 'common', renderContext);
         await this.renderTemplateSave(path.join(outputDir, 'service.ts'), 'service', renderContext);
         await this.renderTemplateSave(path.join(outputDir, 'index.ts'), 'index', renderContext);
+        if (this.config.exportJson) {
+            const exportOpenapi = this.config.exportJson === true || this.config.exportJson.openapi;
+            const exportService = this.config.exportJson === true || this.config.exportJson.service;
+            if (exportOpenapi) {
+                await fs.promises.writeFile(path.join(outputDir, 'openapi.json'), JSON.stringify(this.openApi), { encoding: "utf-8" });
+            }
+            if (exportService) {
+                await fs.promises.writeFile(path.join(outputDir, 'service.json'), JSON.stringify(apis.map((item) => {
+                    return {
+                        id: item.name, label: item.label, items: item.items.map(({ path, method, name, metadata }) => {
+                            return {
+                                path,
+                                method,
+                                name,
+                                title: metadata.rawDefinition.summary,
+                                description: metadata.rawDefinition.description,
+                                responseType: metadata.responseType.length ? metadata.responseType[0] : ''
+                            };
+                        })
+                    };
+                })), { encoding: "utf-8" });
+            }
+        }
     }
 }
 exports.GeneratorService = GeneratorService;

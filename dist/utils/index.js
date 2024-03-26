@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveIdentifier = exports.getPathLastName = exports.getByPath = exports.urlPathSplit = void 0;
+exports.resolveIdentifier = exports.toPinyin = exports.getPathLastName = exports.getByPath = exports.urlPathSplit = void 0;
 const log_1 = require("../log");
 const ReservedWords = require("reserved-words");
 const pinyin = require("tiny-pinyin");
@@ -26,7 +26,11 @@ function getPathLastName(urlPath) {
 }
 exports.getPathLastName = getPathLastName;
 const resolveRegex = [/\{([^\{\}]*)\}/g, /\[([^\[\]]*)\]/g, /<(\w+)>(.+)<\/\1>/g, /<([^<>]*)>/g,];
-const resolveIdentifier = (typeName) => {
+function toPinyin(name) {
+    return pinyin.convertToPinyin(name, '', true);
+}
+exports.toPinyin = toPinyin;
+function resolveIdentifier(typeName, convertPinyin = true) {
     const typeLastName = resolveRegex.reduce((str, reg) => {
         str.replace(reg, function () {
             const match = arguments[arguments.length - 3];
@@ -38,16 +42,16 @@ const resolveIdentifier = (typeName) => {
         .replace(/[-_ ](\w)/g, (_all, letter) => letter.toUpperCase())
         .replace(/[^\w^\s^\u4e00-\u9fa5]/gi, '');
     if (ReservedWords.check(name)) {
-        name = `__OPENAPI_TO_SERVICE_${name}__`;
+        name = `__OPENAPI_TO_REQUEST_${name}__`;
     }
     if (name === '_' || /^\d+$/.test(name)) {
         (0, log_1.default)('⚠️  models不能以number开头，原因可能是Model定义名称为中文, 建议联系后台修改');
-        return `__OPENAPI_TO_SERVICE_${name}`;
+        return `__OPENAPI_TO_REQUEST_${name}`;
     }
     if (!/[\u3220-\uFA29]/.test(name) && !/^\d$/.test(name)) {
         return name;
     }
     const noBlankName = name.replace(/ +/g, '');
-    return pinyin.convertToPinyin(noBlankName, '', true);
-};
+    return convertPinyin ? toPinyin(noBlankName) : noBlankName;
+}
 exports.resolveIdentifier = resolveIdentifier;

@@ -23,7 +23,9 @@ export declare class GeneratorService {
         contentType: string[];
         responseType: string[];
     };
-    protected getDefaultName(path: string, method: string, defined: OperationObject): GenerateCustomNames;
+    protected getDefaultName(path: string, method: string, defined: OperationObject): GenerateCustomNames & {
+        folderLabel: string;
+    };
     generator(): Promise<void>;
 }
 export {};

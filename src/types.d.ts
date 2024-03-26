@@ -38,6 +38,12 @@ export type GenerateServiceProps = {
      * 导出的api名称
      */
     exportName?: string;
+    /**
+     * 导出JSON文件
+     * openapi 文件
+     * service 描述文件
+     */
+    exportJson?: boolean | { openapi: boolean, service: boolean };
 
     hook?: {
         /** 自定义请求方法params参数,参数中如需排除该参数请返回 false */

@@ -12,7 +12,7 @@ import {
     PathsObject,
     ParameterObject, ResponseObject
 } from "openapi-typescript/src/types";
-import {getByPath, getPathLastName, resolveIdentifier, urlPathSplit} from "../utils";
+import {getByPath, getPathLastName, resolveIdentifier, toPinyin, urlPathSplit} from "../utils";
 import {DefaultTemplateFolder} from "../index";
 import * as process from "process";
 import {ResponseType} from "axios";
@@ -230,12 +230,15 @@ export class GeneratorService {
         }
     }
 
-    protected getDefaultName(path: string, method: string, defined: OperationObject): GenerateCustomNames {
+    protected getDefaultName(path: string, method: string, defined: OperationObject): GenerateCustomNames & {
+        folderLabel: string
+    } {
         let name = defined.operationId ?? getPathLastName(path);
         const pathItems = urlPathSplit(path);
         let tag = defined.tags.length ? defined.tags[defined.tags.length - 1] : undefined;
         tag = tag ?? (pathItems.length > 1 ? pathItems[pathItems.length - 2] : '');
-        return {name: resolveIdentifier(name), folder: resolveIdentifier(tag)};
+        const folderLabel = resolveIdentifier(tag, false);
+        return {name: resolveIdentifier(name), folder: toPinyin(folderLabel), folderLabel};
     }
 
     async generator() {
@@ -245,11 +248,15 @@ export class GeneratorService {
             name: string,
             metadata: ReturnType<typeof this['getMethodMetadata']>
         };
-        const folderTree: Record<string, { pathNames: string[], items: Record<string, ApiTreeItem> }> = {};
+        const folderTree: Record<string, {
+            pathNames: string[],
+            label: string,
+            items: Record<string, ApiTreeItem>
+        }> = {};
         const paths = Object.entries(this.apiPaths).reduce((arr, [path, methods]) => {
             const pathDefinition = Object.entries(methods).reduce((obj, [method, methodDefined]) => {
                 const metadata = this.getMethodMetadata(path, method);
-                const defaultName = this.getDefaultName(path, method, metadata.definition);
+                const {folderLabel, ...defaultName} = this.getDefaultName(path, method, metadata.definition);
                 let customName = this.config.hook.customName ? this.config.hook.customName({
                     definition: metadata.definition,
                     path,
@@ -261,7 +268,7 @@ export class GeneratorService {
                     const folderNames = urlPathSplit(folder);
                     const folderName = folderNames.join('.');
                     if (!folderTree[folderName]) {
-                        folderTree[folderName] = {pathNames: folderNames, items: {}};
+                        folderTree[folderName] = {pathNames: folderNames, label: folderLabel, items: {}};
                     }
                     if (folderTree[folderName].items[name]) {
                         console.error('[openapi-request] duplicate names in the sibling directory:', format('?/? ?:?', folderName, name, method, path));
@@ -286,9 +293,10 @@ export class GeneratorService {
         const apis = Object.keys(folderTree)
             .sort((a, b) => a.localeCompare(b))
             .map((name) => {
+                const {label} = folderTree[name];
                 const items = Object.values(folderTree[name].items);
                 items.sort((a, b) => a.name.localeCompare(b.name));
-                return {name, items};
+                return {name, label, items};
             });
         let pathAst = '';
         try {
@@ -307,5 +315,28 @@ export class GeneratorService {
         await this.renderTemplateSave(path.join(outputDir, 'common.ts'), 'common', renderContext);
         await this.renderTemplateSave(path.join(outputDir, 'service.ts'), 'service', renderContext);
         await this.renderTemplateSave(path.join(outputDir, 'index.ts'), 'index', renderContext);
+        if (this.config.exportJson) {
+            const exportOpenapi = this.config.exportJson === true || this.config.exportJson.openapi;
+            const exportService = this.config.exportJson === true || this.config.exportJson.service;
+            if (exportOpenapi) {
+                await fs.promises.writeFile(path.join(outputDir, 'openapi.json'), JSON.stringify(this.openApi), {encoding: "utf-8"});
+            }
+            if (exportService) {
+                await fs.promises.writeFile(path.join(outputDir, 'service.json'), JSON.stringify(apis.map((item) => {
+                    return {
+                        id: item.name, label: item.label, items: item.items.map(({path, method, name, metadata}) => {
+                            return {
+                                path,
+                                method,
+                                name,
+                                title: metadata.rawDefinition.summary,
+                                description: metadata.rawDefinition.description,
+                                responseType: metadata.responseType.length ? metadata.responseType[0] : ''
+                            }
+                        })
+                    }
+                })), {encoding: "utf-8"});
+            }
+        }
     }
 }

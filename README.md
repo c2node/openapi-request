@@ -169,11 +169,13 @@
 |  ----  | ----  |  ----  |  ----  | - |
 | requestImport  | 否 | 导入自定义请求方法 | string | import axios from "axios" |
 | requestFnName  | 否 | 自定义请求方法名称 | string | axios.request |
-| requestParams | 否 | 生产胡请求方法Params包含的参数 | Record<'path' \| 'query' \| 'header' \| 'cookie', boolean> | {path:true,query:true,header:true,cookie:true} |
-| requestFnOtherParams | 否 | 自定义请求方法其他可选参数 | { name: string, type: string }[] | [] |
+| requestParams | 否 | 生产的请求方法Params包含的参数 | Record<'path' \| 'query' \| 'header' \| 'cookie', boolean> | {path:true,query:true,header:true,cookie:true} |
+| requestFnOtherParams | 否 | 自定义请求方法其它可选参数 | { name: string, type: string }[] | [] |
 | serversPath  | 否 | 生成的文件夹的路径 | string | - |
 | schemaPath  | 是 | Swagger 2.0 或 OpenAPI 3.0 的请求地址或本地路径 | string | - |
 | projectName  | 否 | 项目名称,如果有将在 serversPath 下创建文件夹 | string | - |
+| exportName | 否 | 导出的api名称 | string | -- |
+| exportJson | 否 | 导出JSON文件 | boolean \| {openapi:boolean,service:boolean  } | -- |
 | templatesFolder | 否 | 自定义模板文件的文件路径 | string | - |
 | hook.customName | 否 | 自定义请求函数名称，目录名称 | {name:"函数名称",folder:"目录名称"} | - |
 | hook.customRequestParams | 否 | 自定义请求方法params参数,参数中如需排除该参数请返回 false | boolean | -- |

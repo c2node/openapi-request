@@ -24,7 +24,12 @@ export function getPathLastName(urlPath: string) {
 }
 
 const resolveRegex = [/\{([^\{\}]*)\}/g, /\[([^\[\]]*)\]/g, /<(\w+)>(.+)<\/\1>/g, /<([^<>]*)>/g,];
-export const resolveIdentifier = (typeName: string) => {
+
+export function toPinyin(name: string) {
+    return pinyin.convertToPinyin(name, '', true);
+}
+
+export function resolveIdentifier(typeName: string, convertPinyin = true) {
     const typeLastName =
         resolveRegex.reduce((str, reg) => {
             str.replace(reg, function () {
@@ -37,16 +42,16 @@ export const resolveIdentifier = (typeName: string) => {
         .replace(/[-_ ](\w)/g, (_all, letter) => letter.toUpperCase())
         .replace(/[^\w^\s^\u4e00-\u9fa5]/gi, '');
     if (ReservedWords.check(name)) {
-        name = `__OPENAPI_TO_SERVICE_${name}__`;
+        name = `__OPENAPI_TO_REQUEST_${name}__`;
     }
     // 当model名称是number开头的时候，ts会报错。这种场景一般发生在后端定义的名称是中文
     if (name === '_' || /^\d+$/.test(name)) {
         Log('⚠️  models不能以number开头，原因可能是Model定义名称为中文, 建议联系后台修改');
-        return `__OPENAPI_TO_SERVICE_${name}`;
+        return `__OPENAPI_TO_REQUEST_${name}`;
     }
     if (!/[\u3220-\uFA29]/.test(name) && !/^\d$/.test(name)) {
         return name;
     }
     const noBlankName = name.replace(/ +/g, '');
-    return pinyin.convertToPinyin(noBlankName, '', true);
-};
+    return convertPinyin ? toPinyin(noBlankName) : noBlankName;
+}

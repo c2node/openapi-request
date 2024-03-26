@@ -3,6 +3,7 @@
 <%- `import {$$$, formatPathVals, setHeader, getHeaderObj, RequestType} from "./common";
 ${config.requestImport};` %>
 <%_ apis.forEach((api)=>{ _%>
+// <%- api.label %>
 export const <%- api.name %> = {
 	<%_ api.items.forEach((item)=>{ _%>
 	<%_ const {definition,params,contentType = [],responseType = []} = item.metadata _%>
