@@ -18,9 +18,8 @@ async function getApiDocument(schemaPath: string) {
         try {
             return await axios.request({url: schemaPath, responseType: "json"}).then(res => res.data);
         } catch (error) {
-            console.error('fetch openapi error:', error);
+            throw new Error('fetch '+schemaPath+' error:'+error.message);
         }
-        return null;
     }
     const schemaJson = await fs.promises.readFile(schemaPath, {encoding: "utf-8"});
     return JSON.parse(schemaJson);

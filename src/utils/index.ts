@@ -39,7 +39,7 @@ export function resolveIdentifier(typeName: string, convertPinyin = true) {
             return str;
         }, getPathLastName(typeName));
     let name = typeLastName
-        .replace(/[-_ ](\w)/g, (_all, letter) => letter.toUpperCase())
+        .replace(/[-](\w)/g, (_all, letter) => letter.toUpperCase())
         .replace(/[^\w^\s^\u4e00-\u9fa5]/gi, '');
     if (ReservedWords.check(name)) {
         name = `__OPENAPI_TO_REQUEST_${name}__`;
